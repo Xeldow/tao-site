@@ -1,2161 +1,890 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>建设工程安全责任人员履职检查系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>建设工程安全责任人员履职检查系统（完整版·导入导出）</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            line-height: 1.8; 
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); line-height: 1.6; min-height: 100vh; padding-bottom: 80px; }
         .container { max-width: 1400px; margin: 0 auto; padding: 15px; }
-        
-        /* 头部样式 */
-        .header { 
-            background: white; 
-            color: #333; 
-            padding: 20px 25px; 
-            border-radius: 15px; 
-            margin-bottom: 15px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        .header h1 { 
-            font-size: 22px; 
-            margin-bottom: 8px; 
-            color: #667eea;
-            font-weight: 700;
-        }
-        .header p { 
-            color: #666; 
-            font-size: 14px;
-        }
-        
-        /* 信息栏样式 */
-        .info-bar { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 15px; 
-            margin-bottom: 15px; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-        .info-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 15px; 
-        }
-        .info-item label { 
-            display: block; 
-            font-size: 13px; 
-            color: #666; 
-            margin-bottom: 6px; 
-            font-weight: 600;
-        }
-        .info-item input, .info-item select { 
-            width: 100%; 
-            padding: 10px 12px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 8px; 
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .info-item input:focus, .info-item select:focus { 
-            outline: none; 
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-        
-        /* 导航标签样式 */
-        .nav-tabs { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 15px; 
-            flex-wrap: wrap; 
-            justify-content: center;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-        .nav-tab { 
-            padding: 12px 20px; 
-            background: white; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-size: 14px; 
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
-            transition: all 0.3s;
-            color: #555;
-            white-space: nowrap;
-        }
-        .nav-tab.active { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102,126,234,0.4);
-        }
-        .nav-tab:hover:not(.active) { 
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        
-        /* 表格容器样式 */
-        .table-container { 
-            background: white; 
-            border-radius: 15px; 
-            padding: 20px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
-            margin-bottom: 15px;
-        }
-        .table-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 20px; 
-            flex-wrap: wrap; 
-            gap: 15px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        .table-header h2 {
-            font-size: 20px;
-            color: #333;
-            font-weight: 700;
-        }
-        
-        /* 进度条样式 */
-        .progress-bar { 
-            flex: 1; 
-            min-width: 200px; 
-            max-width: 350px;
-        }
-        .progress-track { 
-            background: #e0e0e0; 
-            border-radius: 12px; 
-            height: 20px; 
-            overflow: hidden;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .progress-fill { 
-            height: 100%; 
-            background: linear-gradient(90deg, #667eea, #764ba2); 
-            transition: width 0.5s; 
-            border-radius: 12px;
-            position: relative;
-        }
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        .progress-text { 
-            font-size: 13px; 
-            color: #666; 
-            margin-top: 6px;
-            font-weight: 600;
-        }
-        
-        /* 筛选按钮样式 */
-        .filter-bar { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 20px; 
-            flex-wrap: wrap; 
-        }
-        .filter-btn { 
-            padding: 8px 16px; 
-            border: 2px solid #e0e0e0; 
-            background: white; 
-            border-radius: 20px; 
-            cursor: pointer; 
-            font-size: 13px; 
-            font-weight: 600;
-            transition: all 0.3s;
-            color: #666;
-        }
-        .filter-btn.active { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white; 
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102,126,234,0.3);
-        }
-        .filter-btn:hover:not(.active) { 
-            border-color: #667eea;
-            color: #667eea;
-        }
-        
-        /* 检查项样式 */
-        .inspection-item { 
-            border: 2px solid #e8e8e8; 
-            border-radius: 12px; 
-            padding: 20px; 
-            margin-bottom: 20px; 
-            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
-            transition: all 0.3s;
-            position: relative;
-        }
-        .inspection-item:hover { 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-color: #667eea;
-            transform: translateY(-2px);
-        }
-        .inspection-item[data-status="compliant"] {
-            border-left: 5px solid #4caf50;
-        }
-        .inspection-item[data-status="noncompliant"] {
-            border-left: 5px solid #f44336;
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
-        }
-        .inspection-item[data-status="notapplicable"] {
-            border-left: 5px solid #9e9e9e;
-        }
-        
-        /* 项目标题样式 */
-        .item-header { 
-            display: flex; 
-            gap: 12px; 
-            margin-bottom: 20px; 
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
-        .item-id { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white; 
-            padding: 6px 14px; 
-            border-radius: 20px; 
-            font-size: 13px; 
-            font-weight: 700; 
-            white-space: nowrap;
-            box-shadow: 0 3px 10px rgba(102,126,234,0.3);
-        }
-        .item-title { 
-            font-size: 16px; 
-            font-weight: 700; 
-            color: #333; 
-            flex: 1;
-            line-height: 1.5;
-            min-width: 250px;
-        }
-        .item-title[contenteditable="true"]:focus {
-            outline: 2px solid #667eea;
-            background: #f0f3ff;
-            border-radius: 6px;
-            padding: 5px;
-        }
-        
-        /* 编辑按钮样式 */
-        .edit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-            transition: all 0.3s;
-        }
-        .edit-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 3px 10px rgba(102,126,234,0.4);
-        }
-        .edit-btn.active {
-            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
-        }
-        
-        /* 下一项按钮样式 */
-        .next-item-btn {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 15px;
-            width: 100%;
-            justify-content: center;
-        }
-        .next-item-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 20px rgba(17,153,142,0.4);
-        }
-        
-        /* 详情区域样式 */
-        .item-details { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        .detail-section { 
-            background: white; 
-            padding: 18px; 
-            border-radius: 10px; 
-            border-left: 4px solid #667eea;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-        }
-        .detail-section:hover {
-            box-shadow: 0 5px 25px rgba(0,0,0,0.12);
-            transform: translateY(-2px);
-        }
-        .detail-section h4 { 
-            font-size: 15px; 
-            color: #667eea; 
-            margin-bottom: 12px; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px;
-            font-weight: 700;
-        }
-        .detail-section ul { 
-            font-size: 14px; 
-            color: #444; 
-            padding-left: 20px; 
-            line-height: 1.8;
-        }
-        .detail-section li { 
-            margin-bottom: 8px;
-            position: relative;
-        }
-        .detail-section li::marker {
-            color: #667eea;
-            font-weight: bold;
-        }
-        .detail-section p { 
-            font-size: 14px; 
-            color: #444; 
-            line-height: 1.8;
-        }
-        
-        /* 常见问题样式 - 修复BUG关键 */
-        .common-issues-container { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 8px; 
-        }
-        .issue-tag { 
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
-            color: #856404; 
-            padding: 6px 12px; 
-            border-radius: 16px; 
-            font-size: 13px; 
-            font-weight: 600;
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-            cursor: pointer; 
-            transition: all 0.3s;
-            border: 2px solid #ffc107;
-            user-select: none;
-        }
-        .issue-tag:hover { 
-            background: linear-gradient(135deg, #ffc107 0%, #ffdb4d 100%); 
-            color: white;
-            transform: scale(1.05);
-            box-shadow: 0 3px 10px rgba(255,193,7,0.4);
-        }
-        .issue-tag.auto-noncompliant {
-            background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
-            color: white;
-            border-color: #d32f2f;
-        }
-        .issue-tag .remove-btn { 
-            background: none; 
-            border: none; 
-            color: #856404; 
-            cursor: pointer; 
-            font-size: 14px; 
-            padding: 0 3px;
-            font-weight: bold;
-        }
-        .issue-tag.auto-noncompliant .remove-btn {
-            color: white;
-        }
-        .issue-tag .remove-btn:hover { 
-            color: #dc3545;
-        }
-        .add-issue-input { 
-            display: flex; 
-            gap: 6px; 
-            width: 100%; 
-            margin-top: 10px; 
-        }
-        .add-issue-input input { 
-            flex: 1; 
-            padding: 8px 12px; 
-            border: 2px solid #ddd; 
-            border-radius: 16px; 
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-        .add-issue-input input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-        .add-issue-input button { 
-            padding: 8px 16px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white; 
-            border: none; 
-            border-radius: 16px; 
-            cursor: pointer; 
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .add-issue-input button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 3px 10px rgba(102,126,234,0.4);
-        }
-        
-        /* 检查结果样式 */
-        .item-result { 
-            display: flex; 
-            gap: 15px; 
-            margin-bottom: 15px; 
-            flex-wrap: wrap; 
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-        }
-        .item-result label { 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            cursor: pointer; 
-            padding: 10px 18px; 
-            border-radius: 25px; 
-            border: 2px solid #e0e0e0; 
-            transition: all 0.3s; 
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .item-result label:hover { 
-            border-color: #667eea;
-            background: #f0f3ff;
-        }
-        .item-result label:has(input:checked) { 
-            border-color: #667eea; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
-        }
-        .item-result input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #667eea;
-        }
-        
-        /* 备注区域样式 */
-        .item-remark textarea { 
-            width: 100%; 
-            padding: 14px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 10px; 
-            font-size: 14px; 
-            resize: vertical; 
-            min-height: 80px; 
-            font-family: inherit;
-            line-height: 1.6;
-            transition: all 0.3s;
-        }
-        .item-remark textarea:focus { 
-            outline: none; 
-            border-color: #667eea; 
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-        
-        /* 汇总面板样式 */
-        .summary-panel { 
-            background: white; 
-            border-radius: 15px; 
-            padding: 30px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
-            margin-bottom: 15px;
-        }
-        .summary-panel h2 {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 700;
-        }
-        .summary-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 15px; 
-            margin-bottom: 25px; 
-        }
-        .summary-card { 
-            text-align: center; 
-            padding: 20px 15px; 
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%); 
-            border-radius: 12px;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-        .summary-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-        .summary-card.highlight { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white;
-        }
-        .summary-card.danger { 
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
-            color: white;
-        }
-        .summary-card.success { 
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
-            color: white;
-        }
-        .summary-value { 
-            font-size: 32px; 
-            font-weight: 800; 
-            margin-bottom: 8px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        .summary-label { 
-            font-size: 13px; 
-            opacity: 0.95;
-            font-weight: 600;
-        }
-        
-        /* 不符合项列表样式 */
-        .noncompliant-list { 
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%); 
-            border: 2px solid #feb2b2; 
-            border-radius: 12px; 
-            padding: 20px; 
-            margin-top: 20px;
-        }
-        .noncompliant-list h3 { 
-            color: #c53030; 
-            margin-bottom: 15px; 
-            font-size: 17px;
-            font-weight: 700;
-        }
-        
-        .responsibility-group {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            border-left: 5px solid #f44336;
-        }
-        .responsibility-group h4 {
-            color: #c53030;
-            font-size: 16px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .responsibility-group .issue-count {
-            background: #f44336;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .noncompliant-item { 
-            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
-            padding: 15px; 
-            border-radius: 10px; 
-            margin-bottom: 12px; 
-            border-left: 4px solid #f56565;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-        }
-        .noncompliant-item:hover {
-            box-shadow: 0 5px 25px rgba(0,0,0,0.12);
-            transform: translateX(5px);
-        }
-        .noncompliant-item strong {
-            font-size: 14px;
-            color: #c53030;
-        }
-        .noncompliant-item .item-detail {
-            font-size: 13px;
-            color: #555;
-            margin-top: 6px;
-            line-height: 1.5;
-        }
-        .noncompliant-item .item-remark {
-            font-size: 12px;
-            color: #c53030;
-            margin-top: 6px;
-            font-style: italic;
-        }
-        .no-issues { 
-            color: #38a169; 
-            text-align: center; 
-            padding: 25px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        
-        /* 操作按钮样式 */
-        .action-bar { 
-            display: flex; 
-            gap: 10px; 
-            flex-wrap: wrap; 
-            margin-top: 20px;
-            justify-content: center;
-        }
-        .action-btn { 
-            padding: 12px 20px; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-size: 14px; 
-            font-weight: 700; 
-            transition: all 0.3s; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-        .action-btn.primary { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white;
-        }
-        .action-btn.success { 
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
-            color: white;
-        }
-        .action-btn.warning { 
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
-            color: white;
-        }
-        .action-btn.info { 
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
-            color: white;
-        }
-        .action-btn.danger {
-            background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
-            color: white;
-        }
-        .action-btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-        }
-        
-        /* 导航按钮样式 */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-        }
-        .nav-btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .nav-btn.prev {
-            background: #e0e0e0;
-            color: #666;
-        }
-        .nav-btn.next {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-        .nav-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* 快速导航按钮 */
-        .quick-nav {
-            position: fixed;
-            right: 20px;
-            bottom: 80px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 1000;
-        }
-        .quick-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-        .quick-btn.top {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .quick-btn.bottom {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-        .quick-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        }
-        
-        /* 底部固定导航 */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 10px 15px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
-            z-index: 999;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-        .bottom-nav-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .bottom-nav-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .bottom-nav-btn.success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-        .bottom-nav-btn.danger {
-            background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
-            color: white;
-        }
-        
-        /* 模态框样式 */
-        .modal { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-        .modal-content { 
-            background: white; 
-            border-radius: 15px; 
-            padding: 30px; 
-            max-width: 800px; 
-            width: 95%; 
-            max-height: 85vh; 
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .modal-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        .modal-header h2 { 
-            font-size: 20px; 
-            color: #333;
-            font-weight: 700;
-        }
-        .close-btn { 
-            background: none; 
-            border: none; 
-            font-size: 28px; 
-            cursor: pointer; 
-            color: #999;
-            transition: all 0.3s;
-        }
-        .close-btn:hover {
-            color: #333;
-            transform: rotate(90deg);
-        }
-        
-        /* 表单样式 */
-        .add-item-form { 
-            display: grid; 
-            gap: 15px; 
-        }
-        .form-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-        }
-        .form-group label { 
-            font-size: 14px; 
-            font-weight: 700; 
-            color: #555;
-        }
-        .form-group input, .form-group textarea, .form-group select { 
-            padding: 12px 15px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 10px; 
-            font-size: 14px; 
-            font-family: inherit;
-            transition: all 0.3s;
-            line-height: 1.5;
-        }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { 
-            outline: none; 
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-        .form-group textarea { 
-            min-height: 100px; 
-            resize: vertical;
-        }
-        
-        /* 整改通知书样式 */
-        .notice-preview {
-            background: white;
-            border: 2px solid #333;
-            padding: 30px;
-            font-size: 13px;
-            line-height: 1.8;
-        }
-        .notice-title {
-            text-align: center;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 25px;
-            color: #c53030;
-        }
-        .notice-info {
-            margin-bottom: 15px;
-        }
-        .notice-info p {
-            margin-bottom: 8px;
-        }
-        .notice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        .notice-table th, .notice-table td {
-            border: 1px solid #333;
-            padding: 10px;
-            text-align: left;
-        }
-        .notice-table th {
-            background: #f5f5f5;
-            font-weight: 700;
-        }
-        .notice-footer {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .notice-signature {
-            text-align: right;
-        }
-        
-        /* 隐藏类 */
+        .header { background: white; padding: 20px 25px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); text-align: center; }
+        .header h1 { font-size: 22px; margin-bottom: 8px; color: #667eea; }
+        .header p { color: #666; font-size: 13px; }
+        .info-bar { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .info-item label { display: block; font-size: 13px; color: #666; font-weight: 600; margin-bottom: 5px; }
+        .info-item input, .info-item select { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+        .nav-tab { padding: 12px 20px; background: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: all 0.3s; }
+        .nav-tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; transform: translateY(-2px); }
+        .table-container { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow-x: auto; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .table-header h2 { font-size: 20px; color: #333; }
+        .progress-bar { flex: 1; min-width: 200px; max-width: 350px; }
+        .progress-track { background: #e0e0e0; border-radius: 12px; height: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); width: 0; transition: width 0.5s; }
+        .progress-text { font-size: 13px; color: #666; margin-top: 5px; }
+        .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 16px; border: 2px solid #e0e0e0; background: white; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        .filter-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .inspection-item { border: 2px solid #e8e8e8; border-radius: 12px; padding: 20px; margin-bottom: 20px; background: #fafbfc; transition: all 0.3s; }
+        .inspection-item:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .inspection-item[data-status="compliant"] { border-left: 5px solid #4caf50; }
+        .inspection-item[data-status="noncompliant"] { border-left: 5px solid #f44336; background: #fff5f5; }
+        .inspection-item[data-status="notapplicable"] { border-left: 5px solid #9e9e9e; }
+        .item-header { display: flex; gap: 12px; margin-bottom: 20px; align-items: flex-start; flex-wrap: wrap; }
+        .item-id { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+        .item-title { font-size: 16px; font-weight: 700; color: #333; flex: 1; line-height: 1.5; }
+        .edit-btn { background: #667eea; color: white; border: none; padding: 5px 12px; border-radius: 16px; cursor: pointer; font-size: 11px; margin-left: 8px; transition: all 0.2s; }
+        .edit-btn.active { background: #4caf50; }
+        .next-item-btn { background: #11998e; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; margin-top: 15px; width: 100%; text-align: center; font-weight: 600; transition: all 0.2s; }
+        .next-item-btn:hover { transform: translateY(-2px); }
+        .item-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .detail-section { background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea; box-shadow: 0 3px 10px rgba(0,0,0,0.05); }
+        .detail-section h4 { font-size: 15px; color: #667eea; margin-bottom: 12px; font-weight: 700; }
+        .detail-section ul { padding-left: 20px; font-size: 14px; color: #444; }
+        .detail-section li { margin-bottom: 8px; }
+        .common-issues-container { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .issue-tag { background: #fff3cd; color: #856404; padding: 6px 12px; border-radius: 16px; font-size: 13px; cursor: pointer; border: 2px solid #ffc107; transition: all 0.2s; }
+        .issue-tag:hover { transform: scale(1.02); background: #ffc107; color: white; }
+        .add-issue-input { display: flex; gap: 6px; margin-top: 10px; width: 100%; }
+        .add-issue-input input { flex: 1; padding: 8px; border: 2px solid #ddd; border-radius: 16px; }
+        .add-issue-input button { padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 16px; cursor: pointer; }
+        .item-result { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; background: white; padding: 15px; border-radius: 10px; }
+        .item-result label { display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: 2px solid #e0e0e0; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .item-result label:hover { border-color: #667eea; }
+        .item-result label:has(input:checked) { background: #667eea; color: white; border-color: #667eea; }
+        .item-remark textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; min-height: 80px; font-family: inherit; resize: vertical; }
+        .summary-panel { background: white; border-radius: 15px; padding: 30px; margin-bottom: 15px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .summary-card { text-align: center; padding: 20px; background: #f5f7fa; border-radius: 12px; transition: all 0.2s; }
+        .summary-card:hover { transform: translateY(-3px); }
+        .summary-card.highlight { background: #667eea; color: white; }
+        .summary-card.danger { background: #f5576c; color: white; }
+        .summary-card.success { background: #11998e; color: white; }
+        .summary-value { font-size: 32px; font-weight: 800; }
+        .summary-label { font-size: 13px; font-weight: 600; }
+        .responsibility-group { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 5px solid #f44336; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+        .responsibility-group h4 { color: #c53030; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+        .responsibility-group .issue-count { background: #f44336; color: white; padding: 2px 10px; border-radius: 20px; font-size: 12px; }
+        .noncompliant-item { background: #fafbfc; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #f56565; }
+        .no-issues { color: #38a169; text-align: center; padding: 30px; font-size: 16px; font-weight: 600; }
+        .action-bar { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+        .action-btn { padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .action-btn.primary { background: #667eea; color: white; }
+        .action-btn.success { background: #11998e; color: white; }
+        .action-btn.danger { background: #f44336; color: white; }
+        .action-btn.warning { background: #ff9800; color: white; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 25px; }
+        .nav-btn { padding: 12px 25px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; transition: all 0.2s; }
+        .nav-btn.prev { background: #e0e0e0; }
+        .nav-btn.next { background: #667eea; color: white; }
+        .nav-btn:hover { transform: translateY(-2px); }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .quick-nav { position: fixed; right: 20px; bottom: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 1000; }
+        .quick-btn { width: 50px; height: 50px; border-radius: 50%; background: #667eea; color: white; border: none; font-size: 20px; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.2); transition: all 0.2s; }
+        .quick-btn:hover { transform: scale(1.1); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px 15px; display: flex; justify-content: space-around; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); z-index: 999; }
+        .bottom-nav-btn { padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .bottom-nav-btn.primary { background: #667eea; color: white; }
+        .bottom-nav-btn.danger { background: #f44336; color: white; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal-content { background: white; border-radius: 15px; padding: 30px; max-width: 800px; width: 95%; max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #555; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; }
         .hidden { display: none !important; }
-        
-        /* 脉冲动画 */
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-        
-        /* 打印样式 */
-        @media print {
-            .nav-tabs, .filter-bar, .action-bar, .add-issue-input, .issue-tag .remove-btn, .quick-nav, .nav-buttons, .edit-btn, .bottom-nav, .next-item-btn { 
-                display: none !important; 
-            }
-            .inspection-item { 
-                break-inside: avoid; 
-            }
-            .container { 
-                max-width: 100%; 
-                background: white;
-            }
-            body {
-                background: white;
-                padding-bottom: 0;
-            }
-        }
-        
-        /* 响应式样式 - 手机优化 */
-        @media (max-width: 768px) {
-            .container { padding: 10px; }
-            .header { padding: 15px 20px; }
-            .header h1 { font-size: 18px; }
-            .header p { font-size: 12px; }
-            .info-bar { padding: 15px; }
-            .info-grid { grid-template-columns: 1fr; }
-            .table-container { padding: 15px; }
-            .table-header { flex-direction: column; align-items: flex-start; }
-            .progress-bar { width: 100%; max-width: none; }
-            .item-details { grid-template-columns: 1fr; }
-            .item-header { flex-direction: column; }
-            .item-title { min-width: 100%; }
-            .item-result { flex-direction: column; }
-            .item-result label { width: 100%; justify-content: center; }
-            .summary-grid { grid-template-columns: repeat(2, 1fr); }
-            .summary-value { font-size: 26px; }
-            .nav-buttons { flex-direction: column; gap: 10px; }
-            .nav-btn { width: 100%; justify-content: center; }
-            .quick-nav { right: 10px; bottom: 70px; }
-            .quick-btn { width: 45px; height: 45px; font-size: 18px; }
-            .action-bar { flex-direction: column; }
-            .action-btn { width: 100%; justify-content: center; }
-            .modal-content { padding: 20px; width: 98%; }
-            .responsibility-group h4 { flex-direction: column; align-items: flex-start; }
-            .bottom-nav { padding: 8px 10px; }
-            .bottom-nav-btn { padding: 8px 15px; font-size: 12px; }
-        }
-        
-        /* 超小屏幕 */
-        @media (max-width: 480px) {
-            .header h1 { font-size: 16px; }
-            .nav-tab { padding: 10px 15px; font-size: 12px; }
-            .filter-btn { padding: 6px 12px; font-size: 12px; }
-            .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .summary-card { padding: 15px 10px; }
-            .summary-value { font-size: 22px; }
-            .summary-label { font-size: 11px; }
-        }
+        @media (max-width: 768px) { .container { padding: 10px; } .info-grid { grid-template-columns: 1fr; } .item-details { grid-template-columns: 1fr; } .summary-grid { grid-template-columns: repeat(2, 1fr); } .action-btn { padding: 10px 16px; font-size: 12px; } .nav-tab { padding: 8px 12px; font-size: 12px; } }
+        @media print { .nav-tabs, .filter-bar, .action-bar, .add-issue-input, .quick-nav, .nav-buttons, .edit-btn, .bottom-nav, .next-item-btn { display: none !important; } .inspection-item { break-inside: avoid; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏗️ 建设工程安全责任人员履职检查系统</h1>
-            <p>完整版 · 可编辑 · 手机适配 · 整改通知书</p>
+<div class="container">
+    <div class="header">
+        <h1>🏗️ 建设工程安全责任人员履职检查系统</h1>
+        <p>完整版 · 全字段可编辑 · 导入/导出 · 数据同步</p>
+    </div>
+    <div class="info-bar">
+        <div class="info-grid">
+            <div class="info-item"><label>🏢 检查单位</label><input type="text" id="checkUnit" placeholder="请输入检查单位"></div>
+            <div class="info-item"><label>👤 检查人员</label><input type="text" id="checkerName" placeholder="请输入检查人员"></div>
+            <div class="info-item"><label>📅 检查日期</label><input type="date" id="checkDate"></div>
+            <div class="info-item"><label>🏗️ 项目名称</label><input type="text" id="projectName" placeholder="请输入项目名称"></div>
+            <div class="info-item"><label>🏭 受检单位</label><input type="text" id="checkedUnit" placeholder="请输入受检单位"></div>
+            <div class="info-item"><label>📋 检查类型</label><select id="checkType"><option>日常检查</option><option>专项检查</option><option>季度考核</option><option>年度考核</option></select></div>
         </div>
-
-        <div class="info-bar">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>🏢 检查单位名称</label>
-                    <input type="text" id="checkUnit" placeholder="请输入检查单位">
-                </div>
-                <div class="info-item">
-                    <label>👤 检查人员姓名</label>
-                    <input type="text" id="checkerName" placeholder="请输入检查人员">
-                </div>
-                <div class="info-item">
-                    <label>📅 检查日期</label>
-                    <input type="date" id="checkDate">
-                </div>
-                <div class="info-item">
-                    <label>🏗️ 受检项目名称</label>
-                    <input type="text" id="projectName" placeholder="请输入项目名称">
-                </div>
-                <div class="info-item">
-                    <label>🏭 受检单位</label>
-                    <input type="text" id="checkedUnit" placeholder="请输入受检单位">
-                </div>
-                <div class="info-item">
-                    <label>📋 检查类型</label>
-                    <select id="checkType">
-                        <option value="">请选择检查类型</option>
-                        <option value="日常检查">日常检查</option>
-                        <option value="专项检查">专项检查</option>
-                        <option value="季度考核">季度考核</option>
-                        <option value="年度考核">年度考核</option>
-                        <option value="突击检查">突击检查</option>
-                    </select>
-                </div>
-            </div>
+    </div>
+    <div class="nav-tabs">
+        <button class="nav-tab active" data-table="table1">🏢 建设单位 (10项)</button>
+        <button class="nav-tab" data-table="table2">👷 项目经理 (13项)</button>
+        <button class="nav-tab" data-table="table3">🛡️ 安全员 (9项)</button>
+        <button class="nav-tab" data-table="table4">📋 总监 (12项)</button>
+        <button class="nav-tab" data-table="table5">🔍 专监 (10项)</button>
+        <button class="nav-tab" data-table="summary">📊 汇总</button>
+    </div>
+    <div id="table1-container" class="table-container"></div>
+    <div id="table2-container" class="table-container hidden"></div>
+    <div id="table3-container" class="table-container hidden"></div>
+    <div id="table4-container" class="table-container hidden"></div>
+    <div id="table5-container" class="table-container hidden"></div>
+    <div id="summary-container" class="summary-panel hidden">
+        <h2>📊 检查汇总报告</h2>
+        <div class="summary-grid">
+            <div class="summary-card"><div class="summary-value" id="total-items">0</div><div class="summary-label">检查项总数</div></div>
+            <div class="summary-card highlight"><div class="summary-value" id="completed-items">0</div><div class="summary-label">已完成</div></div>
+            <div class="summary-card success"><div class="summary-value" id="compliant-items">0</div><div class="summary-label">符合</div></div>
+            <div class="summary-card danger"><div class="summary-value" id="noncompliant-items">0</div><div class="summary-label">不符合</div></div>
+            <div class="summary-card"><div class="summary-value" id="notapplicable-items">0</div><div class="summary-label">无此项</div></div>
+            <div class="summary-card highlight"><div class="summary-value" id="completion-rate">0%</div><div class="summary-label">完成率</div></div>
         </div>
-
-        <div class="nav-tabs">
-            <button class="nav-tab active" data-table="table1">🏢 建设单位</button>
-            <button class="nav-tab" data-table="table2">👷 项目经理</button>
-            <button class="nav-tab" data-table="table3">🛡️ 安全员</button>
-            <button class="nav-tab" data-table="table4">📋 总监</button>
-            <button class="nav-tab" data-table="table5">🔍 专监</button>
-            <button class="nav-tab" data-table="summary">📊 汇总</button>
-        </div>
-
-        <div id="table1-container" class="table-container"></div>
-        <div id="table2-container" class="table-container hidden"></div>
-        <div id="table3-container" class="table-container hidden"></div>
-        <div id="table4-container" class="table-container hidden"></div>
-        <div id="table5-container" class="table-container hidden"></div>
-
-        <div id="summary-container" class="summary-panel hidden">
-            <h2>📊 检查汇总报告</h2>
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-value" id="total-items">72</div>
-                    <div class="summary-label">检查项总数</div>
-                </div>
-                <div class="summary-card highlight">
-                    <div class="summary-value" id="completed-items">0</div>
-                    <div class="summary-label">已完成</div>
-                </div>
-                <div class="summary-card success">
-                    <div class="summary-value" id="compliant-items">0</div>
-                    <div class="summary-label">符合</div>
-                </div>
-                <div class="summary-card danger">
-                    <div class="summary-value" id="noncompliant-items">0</div>
-                    <div class="summary-label">不符合</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-value" id="notapplicable-items">0</div>
-                    <div class="summary-label">无此项</div>
-                </div>
-                <div class="summary-card highlight">
-                    <div class="summary-value" id="completion-rate">0%</div>
-                    <div class="summary-label">完成率</div>
-                </div>
-            </div>
-            
-            <div id="responsibility-groups"></div>
-            
-            <div class="action-bar">
-                <button class="action-btn primary" onclick="printReport()">🖨️ 打印</button>
-                <button class="action-btn success" onclick="exportJSON()">📥 导出</button>
-                <button class="action-btn danger" onclick="exportNotice()">📄 整改书</button>
-            </div>
-        </div>
-
+        <div id="responsibility-groups"></div>
         <div class="action-bar">
             <button class="action-btn primary" onclick="printReport()">🖨️ 打印报告</button>
             <button class="action-btn success" onclick="exportJSON()">📥 导出JSON</button>
+            <button class="action-btn warning" onclick="importJSON()">📂 导入JSON</button>
             <button class="action-btn danger" onclick="exportNotice()">📄 整改通知书</button>
-            <button class="action-btn info" onclick="showAddItemModal()">➕ 添加项</button>
-            <button class="action-btn info" onclick="showEditAllModal()">✏️ 批量编辑</button>
+            <button class="action-btn warning" onclick="resetAllData()">🔄 重置默认数据</button>
         </div>
     </div>
-
-    <!-- 快速导航按钮 -->
-    <div class="quick-nav">
-        <button class="quick-btn top" onclick="scrollToTop()" title="回顶部">⬆️</button>
-        <button class="quick-btn bottom" onclick="scrollToBottom()" title="回底部">⬇️</button>
+    <div class="action-bar">
+        <button class="action-btn primary" onclick="printReport()">🖨️ 打印报告</button>
+        <button class="action-btn success" onclick="exportJSON()">📥 导出JSON</button>
+        <button class="action-btn warning" onclick="importJSON()">📂 导入JSON</button>
+        <button class="action-btn primary" onclick="showAddItemModal()">➕ 添加检查项</button>
+        <button class="action-btn primary" onclick="showEditAllModal()">✏️ 批量编辑</button>
+        <button class="action-btn danger" onclick="exportNotice()">📄 整改书</button>
     </div>
+</div>
+<div class="quick-nav">
+    <button class="quick-btn top" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</button>
+    <button class="quick-btn bottom" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">⬇️</button>
+</div>
+<div class="bottom-nav">
+    <button class="bottom-nav-btn primary" onclick="navigateTable(-1)">⬅️ 上一表</button>
+    <button class="bottom-nav-btn primary" onclick="navigateTable(1)">下一表 ➡️</button>
+    <button class="bottom-nav-btn danger" onclick="exportNotice()">📄 整改书</button>
+</div>
 
-    <!-- 底部固定导航 -->
-    <div class="bottom-nav">
-        <button class="bottom-nav-btn prev" onclick="navigateTable(-1)">⬅️ 上一表</button>
-        <button class="bottom-nav-btn primary" onclick="navigateTable(1)">下一表 ➡️</button>
-        <button class="bottom-nav-btn danger" onclick="exportNotice()">📄 整改书</button>
-    </div>
+<!-- 模态框 -->
+<div id="addItemModal" class="modal hidden"><div class="modal-content"><div class="modal-header"><h3>➕ 添加新检查项</h3><button class="close-btn" onclick="closeAddItemModal()" style="background:none;border:none;font-size:24px;cursor:pointer;">×</button></div>
+    <div class="form-group"><label>表格</label><select id="newItemTable"><option value="table1">建设单位</option><option value="table2">项目经理</option><option value="table3">安全员</option><option value="table4">总监</option><option value="table5">专监</option></select></div>
+    <div class="form-group"><label>编号</label><input type="text" id="newItemId" placeholder="例：6.1"></div>
+    <div class="form-group"><label>标题</label><input type="text" id="newItemTitle" placeholder="标题"></div>
+    <div class="form-group"><label>检查内容</label><textarea id="newItemContent" rows="2"></textarea></div>
+    <div class="form-group"><label>检查方式（每行一条）</label><textarea id="newItemMethods" rows="3"></textarea></div>
+    <div class="form-group"><label>检查要点（每行一条）</label><textarea id="newItemTips" rows="3"></textarea></div>
+    <div class="form-group"><label>常见问题（逗号分隔）</label><input type="text" id="newItemIssues"></div>
+    <div class="form-group"><label>法规依据</label><textarea id="newItemRegulations" rows="2"></textarea></div>
+    <button class="action-btn primary" onclick="confirmAddItem()">确认添加</button>
+    <button class="action-btn" onclick="closeAddItemModal()" style="margin-top:10px;">取消</button>
+</div></div>
 
-    <!-- 添加项目模态框 -->
-    <div id="addItemModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>➕ 添加新检查项</h2>
-                <button class="close-btn" onclick="closeAddItemModal()">×</button>
-            </div>
-            <div class="add-item-form">
-                <div class="form-group">
-                    <label>选择表格</label>
-                    <select id="newItemTable">
-                        <option value="table1">表一：建设单位项目负责人</option>
-                        <option value="table2">表二：施工单位项目经理</option>
-                        <option value="table3">表三：专职安全员</option>
-                        <option value="table4">表四：总监理工程师</option>
-                        <option value="table5">表五：安全专业监理工程师</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>检查项编号</label>
-                    <input type="text" id="newItemId" placeholder="如：1.13">
-                </div>
-                <div class="form-group">
-                    <label>检查内容标题</label>
-                    <input type="text" id="newItemTitle" placeholder="请输入检查内容">
-                </div>
-                <div class="form-group">
-                    <label>检查方式（每行一条）</label>
-                    <textarea id="newItemMethods" placeholder="1.&#10;2.&#10;3."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>专家技巧（每行一条）</label>
-                    <textarea id="newItemTips" placeholder="•&#10;•&#10;•"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>常见问题（用逗号分隔）</label>
-                    <input type="text" id="newItemIssues" placeholder="问题1, 问题2, 问题3">
-                </div>
-                <div class="form-group">
-                    <label>法规依据</label>
-                    <textarea id="newItemRegulations" placeholder="请输入法规依据"></textarea>
-                </div>
-                <button class="action-btn primary" onclick="confirmAddItem()">✅ 确认添加</button>
-            </div>
+<div id="editAllModal" class="modal hidden"><div class="modal-content"><div class="modal-header"><h3>✏️ 批量编辑检查项</h3><button class="close-btn" onclick="closeEditAllModal()" style="background:none;border:none;font-size:24px;cursor:pointer;">×</button></div>
+    <div class="form-group"><label>表格</label><select id="editTableSelect" onchange="loadEditItems()"><option value="table1">建设单位</option><option value="table2">项目经理</option><option value="table3">安全员</option><option value="table4">总监</option><option value="table5">专监</option></select></div>
+    <div class="form-group"><label>检查项</label><select id="editItemSelect" onchange="loadEditItemData()"></select></div>
+    <div class="form-group"><label>标题</label><input type="text" id="editItemTitle"></div>
+    <div class="form-group"><label>检查内容</label><textarea id="editItemContent" rows="2"></textarea></div>
+    <div class="form-group"><label>检查方式</label><textarea id="editItemMethods" rows="3"></textarea></div>
+    <div class="form-group"><label>检查要点</label><textarea id="editItemTips" rows="3"></textarea></div>
+    <div class="form-group"><label>常见问题</label><input type="text" id="editItemIssues"></div>
+    <div class="form-group"><label>法规依据</label><textarea id="editItemRegulations" rows="2"></textarea></div>
+    <button class="action-btn primary" onclick="confirmEditItem()">保存修改</button>
+    <button class="action-btn" onclick="closeEditAllModal()" style="margin-top:10px;">取消</button>
+</div></div>
+
+<div id="noticeModal" class="modal hidden"><div class="modal-content" style="max-width: 900px;"><div class="modal-header"><h3>📄 整改通知书预览</h3><button class="close-btn" onclick="closeNoticeModal()" style="background:none;border:none;font-size:24px;cursor:pointer;">×</button></div>
+    <div id="noticePreview"></div>
+    <div class="action-bar" style="margin-top:20px;"><button class="action-btn primary" onclick="printNotice()">🖨️ 打印</button><button class="action-btn success" onclick="downloadNotice()">💾 下载</button></div>
+</div></div>
+
+<input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportFile(this)">
+
+<script>
+// ======================= 完整默认数据（54项全字段） =======================
+const defaultData = {
+    table1: [
+        {id:"1.1",title:"安全责任制与双重预防机制",content:"核实项目负责人是否建立健全安全生产责任制，是否落实安全风险分级管控和隐患排查治理双重预防工作机制。",methods:["1.查阅项目负责人签署的《安全生产责任承诺书》。","2.查阅项目安全生产分级管控清单及隐患排查治理台账。","3.访谈项目负责人对双重预防机制的掌握情况。","4.查阅建设单位检查参建单位主要管理人员安全工作履职情况记录。"],tips:["项目负责人必须在办理施工许可前签署《安全生产责任承诺书》。","重点检查是否参与建立了项目安全风险分级管控清单，是否制定了隐患排查治理制度。","主要负责人是否定期（每月/每季度/复工复产前）带队检查安全生产工作。","交叉验证：承诺书签署记录 ↔ 安全检查台账 ↔ 隐患整改闭环资料 ↔ 考核奖惩记录。"],commonIssues:["未签署安全生产责任承诺书。","仅有制度文件，无实际的风险辨识记录或隐患排查记录。","项目负责人未组织开展定期检查，对现场安全情况不知情。","对参建各方人员安全生产履职情况检查流于形式。"],regulations:"《广东省住房和城乡建设厅关于房屋市政工程建设单位落实质量安全首要责任的管理规定》第五条、第六条"},
+        {id:"1.2",title:"发包与用工管理",content:"查阅发包合同，核实是否将工程发包给具备相应资质的单位，不得肢解发包或违规指定分包单位；核查建筑工人实名制落实情况。",methods:["1.查阅施工合同、分包合同原件。","2.通过全国建筑市场监管公共服务平台查询承包单位资质信息。","3.核对合同范围是否存在肢解发包情形。","4.查阅实名制管理平台数据及现场花名册。"],tips:["资质查询必须当场用手机/电脑查，不能只看打印件。","肢解发包识别：同一单位工程分多个合同、同一专业分多家施工。","挂靠与转包识别：查社保缴纳单位与资质单位是否一致。","检查实名制：现场工人100%录入平台，按月审核工资支付表。","交叉验证：合同 ↔ 资质 ↔ 社保 ↔ 实名制考勤 ↔ 工资流水。"],commonIssues:["资质挂靠","肢解发包规避招标","未落实实名制管理"],regulations:"《建设工程安全生产管理条例》第七条；《建筑法》第二十四条；《广东省...管理规定》第十四条、第十九条"},
+        {id:"1.3",title:"施工图审查",content:"查阅审查文件，核实施工图设计文件是否报有关机构审查，未经审查批准不得使用。",methods:["1.查阅施工图审查合格书及审查意见书。","2.通过施工图审查信息系统核对审查状态。","3.核对设计变更是否重新报审。"],tips:["查阅审查机构资质、人员签字、日期。","在广东省工程设计文件管理系统核对真实性。","结构、消防、节能等变更必须重新审查。","交叉验证：合格书日期 ↔ 图纸日期 ↔ 施工日志 ↔ 变更文件。"],commonIssues:["未审先施","以优化设计名义降低标准","审查造假","重大变更未重审"],regulations:"《房屋建筑和市政基础设施工程施工图设计文件审查管理办法》；《广东省...管理规定》第十二条、第十三条"},
+        {id:"1.4",title:"工期与造价",content:"查阅施工合同，核实是否存在盲目压缩合同约定工期、迫使承包单位以低于成本价格竞标的情况。",methods:["1.查阅施工合同工期条款，对比定额工期。","2.查阅招标文件、中标通知书、工程量清单计价文件。","3.访谈施工单位确认是否存在压价行为。"],tips:["定额工期查询：《广东省建设工程施工工期定额》。","压缩工期识别：合同工期＜定额工期80%需专项论证；现浇混凝土主体结构施工周期不宜少于7天/层。","检查优质优价政策落实。","交叉验证：合同工期 ↔ 定额工期 ↔ 施工进度计划 ↔ 混凝土施工日志。"],commonIssues:["阴阳合同","工期低于7天/层","压缩工期无专家论证","未落实工期补偿"],regulations:"《建设工程安全生产管理条例》第七条；《广东省...管理规定》第十五条"},
+        {id:"1.5",title:"文明施工、安全费用列支与拨付",content:"查阅工程概算及支付凭证，核实是否将文明施工、扬尘防治与安全生产措施费用单独列支，并按合同约定及时足额拨付。",methods:["1.查阅工程概算书、安全费用专用账户。","2.核对银行转账凭证、发票。","3.查阅安全费用使用台账并与支付凭证比对。","4.检查现场文明施工、扬尘防治措施落实情况。"],tips:["合同工期一年以内预付≥50%，一年以上预付≥30%。","必须存入三方共管专用账户，严禁混拨。","按施工进度同步拨付，滞后超过30天需说明。","交叉验证：概算金额 ↔ 合同金额 ↔ 实际拨付 ↔ 现场设施。"],commonIssues:["安措费挪作他用","预付不足","支付滞后无说明"],regulations:"《建设工程安全生产管理条例》第八条；《广东省...管理规定》第二十条"},
+        {id:"1.6",title:"安全施工措施",content:"查阅备案资料，核实领取施工许可证时是否报送安全施工措施，是否办理工程质量、安全监督手续。",methods:["1.核对办理时间与开工时间。","2.查阅质量安全监督交底书。","3.查阅危大工程及超过一定规模的危大工程清单。"],tips:["当地质量安全监督站查询项目登记信息。","检查是否已取得施工许可证或开工报告。","交叉验证：施工许可证日期 ↔ 监督登记日期 ↔ 开工报告日期 ↔ 实际动工日期。"],commonIssues:["未提供安全施工措施先开工","未及时报送","未取得施工许可证擅自施工"],regulations:"《建设工程安全生产管理条例》第十条；《广东省...管理规定》第十条"},
+        {id:"1.7",title:"前期资料",content:"查阅移交记录，核实是否向勘察、设计、施工、监理等单位提供真实、准确、齐全的原始资料，是否组织勘察、设计等单位在施工招标文件中列出危大工程清单。",methods:["1.查阅资料移交清单及签收记录。","2.核对地质勘察报告、地下管线资料、相邻建筑物资料等是否完整。","3.访谈参建单位确认资料接收情况。"],tips:["重点检查地下管线、地质勘察、周边建筑物、气象水文等资料。","检查建设单位是否对毗邻建筑物、相关管线设施进行了专项调查。","检查资料移交清单是否有各方签字盖章。","交叉验证：移交清单 ↔ 签收记录 ↔ 访谈 ↔ 施工图纸引用资料。"],commonIssues:["未提供环境调查报告或不全","调查报告信息不全","招标文件中未列出危大工程清单"],regulations:"《建设工程安全生产管理条例》第六条；《广东省...管理规定》第十一条"},
+        {id:"1.8",title:"设备、材料采购",content:"查阅采购清单，核实是否明示或暗示施工单位使用不合格或不符合设计要求的建筑材料、建筑构配件和设备，不得指定生产厂或供应商。",methods:["1.查阅甲供材料设备清单及采购合同。","2.核对设计文件与材料规格是否一致。","3.访谈施工单位确认是否存在指定供应商行为。"],tips:["指定供应商识别：查会议纪要、工作联系单、口头指令记录。","材料质量：查检测报告、合格证、进场验收记录。","检查建设单位自行采购材料是否符合设计和合同要求。","第三方检测机构不得与施工单位委托的为同一家。","交叉验证：设计文件 ↔ 采购合同 ↔ 进场验收 ↔ 检测报告。"],commonIssues:["指定供应商","甲供材料质量不合格","违规减少检测项目"],regulations:"《建设工程安全生产管理条例》第九条；《广东省...管理规定》第十九条"},
+        {id:"1.9",title:"危大工程管理",content:"核实建设单位是否在招标文件中列出危大工程清单，是否保障危大工程施工技术措施费，是否督促落实六不施工及提级管控要求、是否按规定进行第三方监测。",methods:["1.查阅招标文件及投标文件，核对危大工程清单及安全管理措施。","2.查阅施工合同及财务支付凭证，核对危大工程专项措施费支付情况。","3.查阅建设单位月度/季度安全检查记录、参建各方履职情况考核及监理通知单。","4.查阅第三方监测合同、方案及记录。"],tips:["检查招标文件中是否已列出危大工程清单。","是否按合同约定及时支付危大工程施工技术措施费。","检查建设单位督促施工单位项目负责人和总监理工程师在岗履职情况。","检查施工单位落实重大危险源安全包保责任制的相关情况。","第三方监测结果异常是否立即组织处置。","交叉验证：招标文件 ↔ 合同费用 ↔ 专项方案 ↔ 现场施工 ↔ 监理通知。"],commonIssues:["招标文件未列出危大清单","未支付或挪用措施费","未检查项目经理/总监在岗","监测异常未处置"],regulations:"《危险性较大的分部分项工程安全管理规定》（住建部令第37号）；《广东省...管理规定》第二十条"},
+        {id:"1.10",title:"现场隐患排查治理",content:"核实建设单位是否建立并落实月、季度及复工复产前的安全检查制度，是否对隐患整改进行闭环管理。",methods:["1.查阅建设单位下发的月度、季度安全检查记录。","2.查阅隐患整改通知单及施工单位的整改回复报告。","3.查阅复工复产前的安全检查记录。"],tips:["是否建立月质量安全检查、季度质量安全检查制度。","是否在复工复产前组织全面检查并对复工条件作出明确评价。","重大隐患是否建立排查治理档案并依法报告。","交叉验证：检查通报 ↔ 整改通知 ↔ 整改回复 ↔ 复工令"],commonIssues:["无月度/季度检查记录或流于形式","复工复产前未组织全面检查","发现隐患后无整改回复，未闭环"],regulations:"《广东省...管理规定》第十八条"}
+    ],
+    // 由于字数限制，table2~table5 的完整数据将在第二部分继续
+};
+// ======================= 续：项目经理（13项） =======================
+defaultData.table2 = [
+    {id:"2.1",title:"安全生产责任制",content:"核实项目经理是否建立以本人为第一责任人的项目安全生产领导小组；是否明确各岗位的责任人员、责任范围和考核标准；是否组织制定并实施项目全员安全生产责任制度。",methods:["1.查阅项目安全生产领导小组成立文件。","2.查阅全员安全生产责任清单及考核标准文件。","3.查阅责任制考核记录。"],tips:["检查是否建立了全员安全生产责任清单。","重点核查项目经理是否按规定对项目管理人员及分包单位的安全生产责任制落实情况进行考核。","交叉验证：人员名单 ↔ 责任清单 ↔ 考核记录 ↔ 现场访谈"],commonIssues:["未成立项目安全生产领导小组。","责任制仅停留在纸面，未进行实质性考核。","责任清单缺失，部分岗位责任不清。"],regulations:"《广东省住房和城乡建设厅关于落实建筑施工企业、工程项目安全生产管理机构设置及安全生产管理人员配备办法的通知》第二十条第（一）款"},
+    {id:"2.2",title:"安全生产管理体系",content:"核实项目经理是否建立独立的安全生产管理机构；是否按规定配备专职安全生产管理人员；是否建立安全生产会议制度。",methods:["1.查阅项目经理建造师注册证书、安全生产考核合格证书（B证）原件。","2.查阅项目组织架构图及安全生产管理机构设置文件。","3.核对专职安全员配备数量及资格（C证）。","4.查阅安全生产会议纪要。"],tips:["检查是否设置了独立的安全生产管理机构，是否按规定配置安全总监。","人员配备标准：建筑工程1万平以下≥1人；1万～5万平≥2人；5万平以上≥3人；市政工程5000万以下≥1人；5000万～2亿≥2人；2亿以上≥3人。涉及起重机械增加1名机械类专职安全员。","安全生产会议纪要内容要有针对性。","交叉验证：组织架构 ↔ 任命书 ↔ 证书 ↔ 考勤 ↔ 社保。"],commonIssues:["未设置独立安管机构","专职安全员配备数量不足","安全员无证上岗或兼职","会议流于形式"],regulations:"《广东省...通知》第二十条第（二）款、第二十一条、第二十六条"},
+    {id:"2.3",title:"安全生产制度及技术交底",content:"核实是否组织制定并实施项目安全生产规章制度（奖惩、危险作业审批等）和各工种安全操作规程；是否落实安全技术交底制度。",methods:["1.查阅安全生产规章制度汇编及操作规程手册。","2.查阅技术交底记录及现场执行情况。","3.现场抽查作业人员了解交底内容掌握情况。"],tips:["检查是否有动火、有限空间等危险作业审批制度及执行记录。","安全技术交底记录应包括方案编制人员或项目技术负责人对项目安全管理人员交底、项目安全管理人员对作业人员交底。","核查技术交底是否由技术人员向作业人员详细说明，让被交底人现场再签一次，对比笔迹签字，严禁代签。","交叉验证：制度文件 ↔ 审批单 ↔ 交底记录 ↔ 现场作业行为"],commonIssues:["制度缺失或照搬照抄无针对性","交底流于形式作业人员不知情","签字造假","现场作业违反操作规程"],regulations:"《广东省...通知》第二十条第（三）款"},
+    {id:"2.4",title:"教育培训及持证核查",content:"核实是否制定年度教育培训计划；是否对新进场工人进行三级教育；特种作业人员是否持证上岗。",methods:["1.查阅培训计划及实施记录（签到表、影像资料）。","2.查阅三级教育卡及考核试卷。","3.查询特种作业人员证书真伪。"],tips:["三级教育：必须包含公司级、项目级、班组级，每级教育时间符合规定。","必须通过应急管理部官网或住建部平台核实特种作业人员证书真伪及有效期。","建立一人一档，档案内容齐全。","交叉验证：培训计划 ↔ 签到表 ↔ 影像资料 ↔ 考核试卷 ↔ 证书查询"],commonIssues:["教育培训缺失或造假","特种作业无证上岗或证件过期","人证不符"],regulations:"《广东省...通知》第二十条第（四）款"},
+    {id:"2.5",title:"安全保障费用",content:"核实是否编制安全生产资金投入计划；安措费是否专户核算、专款专用；是否为作业人员办理意外伤害保险，是否购买安全生产责任险。",methods:["1.查阅安措费提取和使用计划。","2.核对财务台账、发票凭证。","3.查阅保险保单。"],tips:["重点核查费用是否用于购置安全防护用具、设施，是否存在挪用现象。","核实是否为施工现场从事危险作业的人员办理了意外伤害保险或工伤保险，项目是否投保安全生产责任险，保险有效期是否覆盖整个施工期。","现场安全设施投入与财务支出是否匹配。","交叉验证：资金计划 ↔ 财务台账 ↔ 发票凭证 ↔ 现场实物 ↔ 保险保单"],commonIssues:["未编制资金计划","安全费用挪作他用","未办理保险或保险过期"],regulations:"《广东省...通知》第二十条第（五）款"},
+    {id:"2.6",title:"危险源辨识与风险分级管控",content:"核实项目经理是否组织开展了危险源辨识与评估工作；是否根据工程进展动态更新危险源清单；核实项目经理是否建立项目安全风险分级管控清单；是否对辨识出的风险进行分级，并落实相应的管控层级和管控措施；是否落实重大风险的提级管控。",methods:["1.查阅危险源辨识与风险分级管控清单。","2.查阅施工组织设计及专项施工方案中关于风险管控措施的描述。","3.现场核对高风险部位的管控措施落实情况。","4.查阅项目开工前及分部分项工程开工前的安全技术交底资料。"],tips:["检查危险源辨识工作是否由项目经理组织，项目技术负责人、专职安全员等是否参与了辨识过程。","核查是否在施工条件发生变化时重新组织了危险源辨识与评估。","检查是否建立了动态更新的危险源辨识与风险分级管控清单，包含风险点名称、风险描述、风险等级（红橙黄蓝）、管控措施、管控责任人等要素。","核查红色（重大）风险是否由项目经理直接负责管控。","交叉验证：风险清单 ↔ 专项方案 ↔ 施工日志 ↔ 现场实体"],commonIssues:["未建立风险分级管控清单或照搬照抄","危险源清单未及时更新","重大风险未提级管控","管控措施缺乏针对性"],regulations:"《广东省...通知》第二十条第（六）款"},
+    {id:"2.7",title:"隐患排查治理",content:"核实是否建立隐患排查治理制度；是否建立隐患排查治理小组并明确责任；是否建立隐患排查治理台账；是否实行隐患闭环管理和逐项销号；是否落实住房城乡建设主管部门和工程建设相关单位提出的隐患整改要求。",methods:["1.查阅《隐患排查治理台账》及《重大事故隐患判定台账》。","2.查阅周检、月检、专项检查记录。","3.查阅建设、监理隐患整改通知单、整改回复单及复查记录。","4.查阅主管部门下发的整改通知书及项目回复的整改报告。"],tips:["检查隐患排查治理台账是否针对高风险点进行了重点排查。","核查是否建立了重大事故隐患台账，并实行逐项明确、逐项销号全流程管理。","检查隐患整改是否做到三定（定人、定时、定措施），复查记录是否由项目经理或其授权人签字确认。","交叉验证：台账 ↔ 通知单 ↔ 回复单 ↔ 复查记录 ↔ 现场实体"],commonIssues:["隐患排查治理流于形式台账造假","未建立重大事故隐患台账","重大隐患未提级管理和销号","隐患整改未闭环无复查记录"],regulations:"《广东省...通知》第二十条第（六）款"},
+    {id:"2.8",title:"危大工程管理",content:"核实危大工程施工期间，项目经理是否在施工现场履职；是否组织对危大工程的专项巡查。",methods:["1.查阅危大工程施工期间的项目负责人带班生产资料。","2.查阅危大工程专项施工方案及施工日志。","3.查阅项目经理对危大工程的交底检查验收资料。"],tips:["检查带班期间是否填写了安全检查记录，是否发现了问题并提出整改要求。","危大工程施工过程中，带班生产记录中是否有加强对重点部位、关键环节的控制的相关内容，是否及时消除隐患。","比对带班记录时间与危大工程施工时间，排查代签或补签现象。","交叉验证：带班记录 ↔ 施工日志 ↔ 视频监控 ↔ 危大工程实施时间"],commonIssues:["危大工程施工期间项目经理脱岗","带班记录与实际施工进度不符造假","未进行书面委托擅自离开"],regulations:"《广东省...通知》第二十条第（六）款；《建筑施工企业负责人及项目负责人施工现场带班暂行办法》"},
+    {id:"2.9",title:"安全生产条件",content:"是否保证安全防护设施、临时用电、消防设施、现场围挡等符合规范要求；是否将办公、生活区与作业区分开设置；是否为作业人员提供合格的劳动防护用品；是否落实带班生产制度，每月带班生产时间是否不少于本月施工时间的80%；短期离开现场时是否有书面委托。",methods:["1.查阅项目负责人带班生产资料，核对签字、时间与施工日志。","2.查阅项目经理外出时书面委托书及被委托人履职记录。","3.查阅安全生产检查记录及隐患整改通知单，核实整改闭环情况。","4.查询安全帽、安全带、安全网质量检验报告，必要时现场抽检对应材料。"],tips:["每月带班生产时间不得少于本月施工时间的80%，通过查阅带班记录、施工安全日志、现场进度了解情况、实名制系统等进行判定。","项目经理离开施工现场时，必须有书面委托书，且被委托人应为项目相关负责人（安全总监）。","交叉验证：带班记录 ↔ 考勤记录 ↔ 视频监控 ↔ 隐患排查记录 ↔ 整改回复"],commonIssues:["安全带、安全帽、安全网质量差或未经检测","带班记录造假","长期不在岗"],regulations:"《广东省...通知》第二十条第（七）款、第二十四条"},
+    {id:"2.10",title:"应急救援预案",content:"核实是否组织制定项目生产安全事故应急救援预案；是否每半年至少组织1次演练；是否建立应急值班制度。",methods:["1.查阅应急预案。","2.查年度演练计划、演练记录、评估报告。","3.查阅应急物资清单及维护记录。"],tips:["是否每半年至少组织1次应急预案演练。","现场是否配备必要的应急救援器材、设备，并进行经常性维护保养。","演练是否符合项目实际，是否包含周边环境、救援力量等内容。","总结记录中是否对演练过程进行评价，是否提出改进措施。","交叉验证：预案文件 ↔ 演练计划 ↔ 演练记录 ↔ 物资台账 ↔ 现场实物"],commonIssues:["未制定预案或照搬照抄无针对性","未按规定频次演练","应急物资缺失或失效","演练流于形式"],regulations:"《广东省...通知》第二十条第（八）款、第三十二条"},
+    {id:"2.11",title:"事故报告",content:"是否建立健全事故处理及报告制度；核实发生事故后是否立即启动预案；是否按规定向企业及主管部门报告；是否保护事故现场；是否配合调查。",methods:["1.查阅各项应急预案中是否包含事故处理及报告制度。","2.查阅事故报告记录及时间戳。","3.访谈相关人员。"],tips:["核实是否在1小时内向事故发生地县级以上人民政府建设主管部门报告。","查阅事故调查、处理、整改记录。","分别访谈多人，比对说法一致性。","交叉验证：事故记录 ↔ 电话通话记录 ↔ 上报文件 ↔ 现场状态"],commonIssues:["瞒报、谎报、迟报事故","破坏事故现场","阻碍事故调查","事故后未落实整改措施"],regulations:"《广东省...通知》第二十条第（九）款"},
+    {id:"2.12",title:"现场文明施工",content:"核实工地是否沿四周连续设置封闭围挡及围挡材质是否达标；现场进出口封闭管理、大门门卫制度及车辆冲洗设施落实情况；施工场地主要道路硬化、裸露场地防尘措施及排水系统；材料存放的分类、规整及安全环保措施、建筑垃圾清运方式；办公区、生活区与作业区的分区隔离情况及宿舍的居住安全标准；现场防火制度、消防器材配置管理。",methods:["1.实地踏勘工地四周及内部，检查围挡连续性、道路硬化、材料堆放、裸土覆盖及三区分离情况。","2.查阅消防设施布置图、材料进场台账及门卫管理制度。","3.使用测量工具核实围挡高度、宿舍通道宽度及人均使用面积。","4.启动车辆冲洗设施及现场喷淋系统，检查其运作有效性。"],tips:["工地必须沿四周连续设置封闭围挡；进出口必须设置大门、门卫室，施工人员持工作卡进出现场。","主要道路必须进行硬化处理；对易产生扬尘的路面、裸露地面及存放土方，必须采取严密的防尘措施。","材料码放整齐，建筑物内施工垃圾清运严禁凌空抛掷；易燃易爆物品必须分类存放。","办公区、生活区与作业区必须明显划分并有隔离措施；严禁在施工程、伙房、库房兼做宿舍；宿舍内严禁使用通铺，人均使用面积不小于2.5m²，通道宽度不小于0.9m，居住人数不超过16人。","消防器材配备有效、足够、合理。","交叉验证：现场状态 ↔ 平面布置图 ↔ 检查记录"],commonIssues:["围挡未连续设置","扬尘失控（冲洗设施缺失、裸土未覆盖）","材料随意堆放占用消防通道","三区未有效隔离、宿舍违规住人","消防器材不足或失效"],regulations:"《建设工程安全生产管理条例》第二十八条、第二十九条、第三十条、第三十一条；《建设工程施工现场环境与卫生标准》JGJ146；《建筑施工安全检查标准》JGJ59"},
+    {id:"2.13",title:"分包管理",content:"查阅分包协议，核实分包单位资质、是否与分包单位签订安全生产管理协议，分包单位安全员数量和履职情况是否符合要求，明确双方安全生产责任。",methods:["1.查阅分包单位施工资质。","2.查阅分包合同及安全生产管理协议。","3.查阅对分包单位的安全检查记录。"],tips:["对分包单位资质登陆四库一平台进行核实，确定资质是否满足工程要求。","是否组织分包作业人员参与安全培训。","查阅安全日志岗前培训内容是否包括对分包单位施工负责人进行安全技术交底，告知危险源、防范措施及事故应急措施。","查阅带班检查记录，是否包含对分包工程的检查情况。","交叉验证：分包合同 ↔ 安全协议 ↔ 资质文件 ↔ 检查记录 ↔ 教育交底记录"],commonIssues:["分包单位资质不满足规定要求","未签安全协议","以包代管"],regulations:"《建设工程安全生产管理条例》第二十四条；《房屋建筑和市政基础设施工程施工分包管理办法》；《建筑施工企业安全生产管理机构设置及专职安全生产管理人员配备办法》"}
+];
+// ======================= 专职安全员（9项） =======================
+defaultData.table3 = [
+    {id:"3.1",title:"安全生产教育",content:"核实专职安全生产管理人员是否组织或参与拟定项目安全生产教育和培训计划；是否组织或参与实施项目安全生产教育和培训；是否如实记录安全生产教育和培训情况。",methods:["1.查阅项目年度安全培训计划表。","2.查阅三级安全教育登记卡、培训签到表、考核试卷及影像资料。","3.查阅施工安全日志中每日岗前教育栏的填写情况。"],tips:["检查培训计划是否包含新进场工人、转岗人员及特种作业人员的培训安排。","重点核查培训签到表、考核试卷的笔迹是否一致，防止代签。","核实施工安全日志中是否每日记录了班前教育情况。","交叉验证：培训计划 ↔ 签到表 ↔ 考核试卷 ↔ 施工日志 ↔ 实名制考勤"],commonIssues:["培训记录造假","只有计划无实施","未对新进场工人进行三级教育即上岗"],regulations:"《广东省...通知》第二十五条第（二）项"},
+    {id:"3.2",title:"风险辨识与评估",content:"核实专职安全生产管理人员是否组织或参与项目安全风险分级管控和隐患排查治理双重预防工作机制建设；是否开展危险源辨识与评估。",methods:["1.查阅危险源辨识与风险分级管控清单和隐患排查治理清单。","2.查阅风险评估报告或辨识记录表，检查是否有专职安全员签字。","3.现场核查重大风险源（如深基坑、高支模）是否设置告知牌。"],tips:["检查是否建立了动态更新的危险源辨识与风险分级管控清单，包含风险点、等级、管控措施及责任人。","核查现场是否在重大风险区域设置了明显的安全风险告知牌和警示标志。","检查是否随施工进度更新了风险清单。","交叉验证：风险管控清单 ↔ 现场告知牌 ↔ 施工日志 ↔ 现场实体"],commonIssues:["风险清单一成不变未随进度更新","只有清单无现场管控措施或告知牌","未开展危险源辨识或由资料员一人完成"],regulations:"《广东省...通知》第二十五条第（三）项"},
+    {id:"3.3",title:"安全隐患排查",content:"核实专职安全生产管理人员是否检查项目安全生产状况；是否及时排查生产安全事故隐患；是否提出改进安全生产管理的建议；施工安全日志填写质量；核实专职安全生产管理人员是否督促落实项目安全生产整改措施；是否按规定对设施、设备进行报验。",methods:["1.现场实地踏勘，观察专职安全员是否在岗巡查。","2.查阅隐患整改通知单。","3.查阅施工安全日志中每日的检查记录。","4.现场核实隐患是否已整改并附整改前后对比照片。","5.查阅设施、设备进场及报审记录"],tips:["检查施工安全日志是否每日连续记录，且记录内容与现场实际进度相符。","核查台账中记录的隐患是否具体（有部位、有描述）。","检查是否实行了整改-复查-销号的闭环流程。","将回复单中的照片与现场实体进行比对，防止假整改、真销号。","交叉验证：施工日志 ↔ 隐患台账 ↔ 现场实体状况"],commonIssues:["日志记录造假","隐患排查走马观花未覆盖重点区域","只查不记或记录与现场不符","未复查即签字销号","设备设施进场未报审"],regulations:"《广东省...通知》第二十五条第（五）项"},
+    {id:"3.4",title:"危大工程过程管理",content:"核实专职安全生产管理人员是否确认危大工程施工现场管理人员向作业人员安全技术交底情况；重要部位是否实施旁站管理；是否现场检查危大工程安全专项施工方案实施情况。",methods:["1.查阅危大工程安全技术交底记录，核实专职安全员是否在交底人或监督人栏签字。","2.查阅危大工程验收记录安全员是否签字。","3.查阅施工安全日志中关于危大工程的专项记录。","4.现场核对危大工程的实际施工参数是否与专项方案一致。"],tips:["检查危大工程作业前，专职安全员是否在场监督了安全技术交底过程，并签字确认。","现场实测关键数据（如立杆间距、水平杆步距），对比专项施工方案，核查是否存在两张皮现象。","交叉验证：专项方案 ↔ 交底 ↔ 施工日志 ↔ 现场实测"],commonIssues:["施工方案与现场不符","危大工程验收记录安全员未签字","交底流于形式专职安全员未签字或未监督"],regulations:"《广东省...通知》第二十五条第（三）项"},
+    {id:"3.5",title:"应急救援演练",content:"核实专职安全生产管理人员是否组织或参与项目应急救援演练。",methods:["1.查阅演练方案、签到表。","2.查阅演练影像资料（照片/视频）。","3.查阅演练评估总结报告。"],tips:["检查是否至少每半年组织或参与了一次演练。","重点核查是否有演练后的评估总结报告，而非仅有照片。","核实专职安全员在演练中是否担任了具体角色，而非仅负责拍照。","交叉验证：演练方案 ↔ 影像资料 ↔ 评估报告 ↔ 施工日志"],commonIssues:["演练记录造假","演练无评估流于形式","未针对项目特点进行专项演练"],regulations:"《广东省...通知》第二十五条第（四）项"},
+    {id:"3.6",title:"违章行为管理",content:"核实专职安全生产管理人员是否及时复核现场安全生产条件；是否制止和纠正违章指挥、强令冒险作业、违反操作规程的行为。",methods:["1.查阅违章违规处罚记录、罚款单或整改通知单等。","2.查阅施工安全日志中关于违章纠正的记录。","3.调取安全检查记录仪视频。"],tips:["根据规定，专职安全员应佩戴记录仪，核查视频中是否有制止违章的画面。","重点检查施工安全日志中专职安全员是否开展岗前巡查。","核实违章行为是否有书面记录（照片、单据）存档。","交叉验证：违章记录 ↔ 施工日志 ↔ 记录仪视频 ↔ 现场人员访谈"],commonIssues:["对违章行为未进行制止和纠正","有制止行为但无书面记录或视频证据","未进行每日开工前的安全岗前巡查"],regulations:"《广东省...通知》第二十五条第（六）项"},
+    {id:"3.7",title:"施工安全日志",content:"核实专职安全生产管理人员是否每日填写施工安全日志；日志内容是否包含岗前巡查、岗前教育、危大工程、高风险作业、重大事故隐患排查治理等；是否由项目负责人签字确认。",methods:["1.查阅每日的施工安全日志。","2.对比现场实际施工进度与日志记录内容的一致性。","3.核查项目负责人（项目经理）的签字确认情况。"],tips:["重点核查日志中是否详细记录了岗前巡查（含安全防护、临时用电、消防）、岗前教育（班前喊话、防护用品检查）等内容。","核查是否对排查出的房屋市政工程生产安全重大事故隐患进行了专项记录和闭环管理。","核查施工安全日志中是否有项目负责人（项目经理）签字确认。","交叉验证：施工安全日志 ↔ 现场实体状况 ↔ 记录仪视频"],commonIssues:["日志记录造假","记录内容空洞未包含岗前巡查、教育等关键要素","未按要求每日记录"],regulations:"《广东省...通知》第三十四条、第四十条"},
+    {id:"3.8",title:"安全生产检查记录仪佩戴与使用",content:"核实专职安全生产管理人员在岗履职期间是否佩戴安全生产检查记录仪；是否全过程视频记录在岗履职情况；是否存在对视频资料进行编辑、篡改的行为。",methods:["1.现场检查专职安全员是否随身佩戴记录仪。","2.登录企业或项目视频管理平台，抽查回放专职安全员的履职视频记录。","3.检查企业对记录仪视频资料的存储管理情况。"],tips:["重点核查在进行隐患排查、违章制止、危大工程监督等关键环节时，是否开启记录仪。","严禁任何人对视频资料进行编辑、篡改。","核实原始视频资料是否至少留档保存6个月。","交叉验证：现场佩戴情况 ↔ 视频回放记录 ↔ 施工安全日志时间点"],commonIssues:["未按规定佩戴记录仪","有设备但未开启或仅在检查时临时开启","视频资料缺失或存储时间不足"],regulations:"《广东省...通知》第三十五条"},
+    {id:"3.9",title:"日常安全检查与隐患处理（补充）",content:"此条为补充项，确保安全员每日检查、隐患处理全面覆盖。",methods:["查阅日常检查记录，核实是否覆盖所有作业区域。","核对隐患处理时效性。"],tips:["确保每日检查有记录，隐患有跟踪。"],commonIssues:["检查记录不连续","隐患整改超期"],regulations:"《建筑施工安全检查标准》JGJ59"}
+];
+// ======================= 总监理工程师（12项） =======================
+defaultData.table4 = [
+    {id:"4.1",title:"执业资格",content:"查阅证书，核实总监理工程师是否按规定取得注册执业资格，是否在岗履职，不得违反规定受聘于两个及以上单位从事执业活动。",methods:["1.查阅注册监理工程师证书原件。","2.通过全国建筑市场监管公共服务平台查询注册信息。","3.查阅考勤记录。","4.查询其名下其他项目任职情况。"],tips:["必须看原件，当场用手机查询验证。","查注册专业、注册单位、有效期。","查总监签字的文件、会议记录。","平台查询同一人注册项目数量（不得超过3个）。","交叉验证：证书 ↔ 平台查询 ↔ 签字文件 ↔ 考勤 ↔ 会议记录。"],commonIssues:["证书挂靠","长期不在岗","同时担任超过三个项目总监","签字弄虚作假"],regulations:"《建筑工程项目总监理工程师质量安全责任六项规定》一；《注册监理工程师管理规定》；《建设工程监理规范》GB/T50319"},
+    {id:"4.2",title:"监理规划与细则",content:"查阅监理规划及实施细则，核实是否编制包括安全监理内容的项目监理规划，对中型及以上项目和危大工程是否编制监理实施细则。",methods:["1.查阅监理规划审批记录。","2.查阅安全监理实施细则。","3.核对编制时间与开工时间。","4.查阅危大工程监理细则。"],tips:["监理规划应在签订监理合同及收到设计文件后编制，开工前完成。","查安全监理目标、内容、方法、措施。","中型及以上项目、危大工程必须编制安全监理实施细则。","交叉验证：监理规划 ↔ 监理细则 ↔ 审批记录 ↔ 开工时间 ↔ 项目规模。"],commonIssues:["监理规划无安全内容","编制时间滞后","应编细则未编制","细则照搬模板缺乏针对性"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》一（一）；《建筑工程项目总监理工程师质量安全责任六项规定》二；《建设工程监理规范》GB/T50319"},
+    {id:"4.3",title:"施工组织设计与专项施工方案审查",content:"查阅审查意见，核实是否组织审查施工单位提交的施工组织设计中的安全技术措施或专项施工方案是否符合工程建设强制性标准，审查后是否有总监理工程师签字。",methods:["1.查阅施工组织设计报审表。","2.查阅专项施工方案报审表。","3.核对总监签字。","4.查阅审查意见及修改回复。"],tips:["查施工单位报审→专业监理工程师审查→总监审核签字。","查是否符合强制性标准、是否有针对性、是否可行。","对比总监多处签字，必要时现场验证。","查审查意见是否有修改、修改后是否重新审查。","交叉验证：审查表 ↔ 审查意见 ↔ 修改回复 ↔ 总监签字 ↔ 方案实施。"],commonIssues:["审查流于形式","总监未签字、未加盖注册章","审查意见未落实","方案修改后未重新审查"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》一（一）；《建筑工程项目总监理工程师质量安全责任六项规定》二"},
+    {id:"4.4",title:"应急预案审查",content:"查阅审查记录，核实是否审核施工单位应急救援预案。",methods:["1.查阅应急预案审查记录。","2.查阅审查意见。"],tips:["查预案内容、针对性、可行性、评审记录。","查审查意见是否具体、是否有修改要求。","查总监签字、审查时间。","交叉验证：预案报审 ↔ 审查记录 ↔ 审查意见 ↔ 总监签字。"],commonIssues:["预案审查流于形式","无总监签字"],regulations:"《关于落实建设工程安全生产监理责任的若干意见》一（一）；《建设工程监理规范》GB/T50319；《生产安全事故应急预案管理办法》"},
+    {id:"4.5",title:"分包资质审查",content:"查阅审查记录，核实是否组织审查施工单位报审的分包单位资格，发现转包和违法分包是否及时向建设单位和有关主管部门报告。",methods:["1.查阅分包单位资格报审表。","2.查阅转包违法分包报告记录。"],tips:["查分包单位资质、安全生产许可证、人员资格。","查分包单位是否实际施工、管理人员是否到位。","交叉验证：资质报审 ↔ 审查记录 ↔ 现场核实 ↔ 报告记录 ↔ 主管部门回复。"],commonIssues:["资质审查不严","转包违法分包未识别","发现问题未报告","报告不及时"],regulations:"《建设工程安全生产管理条例》第十四条；《建筑工程项目总监理工程师质量安全责任六项规定》二；《房屋建筑和市政基础设施工程施工分包管理办法》"},
+    {id:"4.6",title:"特种作业人员核查",content:"查阅记录，审核特种作业人员操作资格证书是否合法有效。",methods:["1.查阅特种作业人员资格报审表。","2.现场抽查持证上岗情况。"],tips:["抽查现场特种作业人员证书是否真实且在有效期内。","报审表是否有总监签字确认。","询问总监核查人员证书真伪方法。","交叉验证：报审表 ↔ 证书查询 ↔ 现场人员 ↔ 考勤记录。"],commonIssues:["证书造假","证书过期","人证不符","无证上岗"],regulations:"《关于落实建设工程安全生产监理责任的若干意见》一（一）；《建筑工程项目总监理工程师质量安全责任六项规定》二；《特种作业人员安全技术培训考核管理规定》"},
+    {id:"4.7",title:"监理过程实施方式",content:"查阅监理日志，核实是否组织项目监理人员采取旁站、巡视和平行检验等形式实施工过程监理。",methods:["1.查阅监理日志。","2.查阅旁站记录。","3.查阅巡视记录。","4.查阅平行检验记录。","5.核对实施频次。"],tips:["查危大工程、关键部位是否有旁站记录。","查监理日志与旁站、巡视记录，必要时可抽查施工日志、安全日志验证。","交叉验证：监理日志 ↔ 旁站记录 ↔ 巡视记录 ↔ 平行检验记录 ↔ 施工记录。"],commonIssues:["旁站记录缺失","巡视频次不足","平行检验未做","记录弄虚作假"],regulations:"《建筑工程项目总监理工程师质量安全责任六项规定》三；《建设工程监理规范》GB/T50319；《房屋建筑工程施工旁站监理管理办法》"},
+    {id:"4.8",title:"材料进场检查",content:"查阅检查记录，核实是否按照规定对施工单位报审的建筑材料、建筑构配件进行检查，不得将不合格材料按合格签字。",methods:["1.查阅材料报审表。","2.查阅进场验收记录。","3.查阅不合格材料处理记录。","4.核对监理签字。"],tips:["查施工单位报审→监理审查→签字确认。","查监理是否参与进场验收。","查不合格材料退场记录、监理见证退场记录。","对比监理多处签字核实签字真实性。","交叉验证：报审表 ↔ 验收记录 ↔ 不合格处理 ↔ 监理签字 ↔ 现场材料。"],commonIssues:["未经审查或检验合格先使用","不合格材料未退场","签字弄虚作假","验收记录缺失"],regulations:"《建筑工程项目总监理工程师质量安全责任六项规定》三；《建设工程监理规范》GB/T50319；《建设工程质量管理条例》第三十七条"},
+    {id:"4.9",title:"隐患排查整治",content:"查阅监理通知单，核实发现安全事故隐患是否要求施工单位整改；情况严重的是否要求暂时停止施工，并及时报告建设单位；检查频次是否符合要求。",methods:["1.查阅监理通知单。","2.查阅整改回复及复查记录。","3.查阅向建设单位报告记录。"],tips:["查隐患描述、整改要求、整改时限。","查停工令总监是否签字。","查整改回复、复查时间、复查结论。","查报告时间、内容、建设单位回复。","交叉验证：监理通知单 ↔ 整改回复 ↔ 复查记录 ↔ 停工令 ↔ 建设单位报告。"],commonIssues:["发现隐患未发通知单","应停工未停工","整改未复查","未报告建设单位","监理检查频次不足"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》二（三）；《建筑工程项目总监理工程师质量安全责任六项规定》五"},
+    {id:"4.10",title:"报告制度",content:"核实施工单位拒不整改或不停止施工的是否及时向有关主管部门报告；是否定期报送监理月报。",methods:["1.查阅向主管部门报告的文件及监理月报。","2.查阅报告时间记录。","3.核对报告时效性。"],tips:["施工单位拒不整改或不停止施工是否有报告记录。","发现后应立即报告（一般24小时内）。","查书面报告、系统上报等。","监理月报内容是否充实、真实。","交叉验证：监理通知单 ↔ 整改回复 ↔ 报告文件 ↔ 主管部门回复 ↔ 处理结果。"],commonIssues:["施工单位拒不停工应报告未报告","报告不及时","报告无书面记录","监理月报质量差"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》二（三）；《建筑工程项目总监理工程师质量安全责任六项规定》五"},
+    {id:"4.11",title:"设备设施进场核查及验收",content:"查阅验收记录，核实是否核查施工现场施工起重机械、整体提升脚手架、非道路移动机械等设施、设备的进场报验及验收手续。",methods:["1.查阅起重机械等验收核查记录。","2.查阅验收手续完整性。","3.核对监理签字。"],tips:["查安装单位自检→总包验收→监理核查→第三方检测。","查验收表、检测报告、使用登记证。","查核查内容、核查意见、签字。","现场检查设备是否有验收标识和影像资料。","交叉验证：验收记录 ↔ 检测报告 ↔ 监理核查 ↔ 使用登记 ↔ 现场设备。"],commonIssues:["验收手续不全","设施设备无进场报审记录","检测报告过期","无验收标识"],regulations:"《关于落实建设工程安全生产监理责任的若干意见》一（二）；《建筑起重机械安全监督管理规定》；《建设工程监理规范》GB/T50319"},
+    {id:"4.12",title:"安措费使用及扬尘治理监督",content:"查阅台账，核实是否检查安措费的使用情况；扬尘治理监督情况。",methods:["1.查阅安措费使用检查记录。","2.查阅安措费支付审核记录。","3.查阅安措费台账核查记录。","4.查阅监理巡查记录是否包含扬尘整治内容。"],tips:["检查频次：查是否定期检查。","检查内容：查提取比例、使用范围、支付凭证。","支付审核：查监理是否审核安全费用支付申请。","现场比对：查现场安全设施与费用支出是否对应。","扬尘监督：结合现场喷淋降尘、裸土覆盖等措施针对性查找监理是否对应下发整改单。","交叉验证：检查记录 ↔ 支付审核 ↔ 费用台账 ↔ 现场设施。"],commonIssues:["未定期检查","检查流于形式","支付审核不严","现场设施与台账不符"],regulations:"《关于落实建设工程安全生产监理责任的若干意见》一（二）；《建设工程监理规范》GB/T50319；《企业安措费提取和使用管理办法》"}
+];
+// ======================= 安全专业监理工程师（10项） =======================
+defaultData.table5 = [
+    {id:"5.1",title:"执业资格",content:"查阅证书，核实安全专业监理工程师是否具备相应资格，需经安全生产教育培训后方可上岗；是否经公司任命上岗。",methods:["1.查阅监理工程师证书。","2.查阅安全生产教育培训记录及考核合格证明。","3.通过住建部门系统查询资格有效性。","4.查阅项目安全专业监理工程师任命书"],tips:["查注册监理工程师证书或监理员证书。","查培训时间、内容、考核成绩、合格证明。","当场通过住建部门系统查询资格有效性。","查证书照片与本人是否一致。","交叉验证：资格证书 ↔ 培训记录 ↔ 系统查询 ↔ 现场人员。"],commonIssues:["无资格证书","安全监理工程师未经公司任命","安全培训缺失","证书过期","人证不符"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》四（三）；《建设工程监理规范》GB/T50319"},
+    {id:"5.2",title:"专题会议纪要",content:"查阅纪要，核实是否定期组织或参加安全专题会议，针对薄弱环节提出整改意见并督促落实。",methods:["1.查阅安全专题会议纪要。","2.查阅会议频次记录。","3.查阅整改意见及落实记录。","4.查阅参会人员签到。"],tips:["查是否定期召开（频次应在建立实施细则或监理规划中体现或与例会合并召开）。","查问题分析、整改意见、责任分工。","查整改意见是否有落实记录。","查参会人员签字。","交叉验证：会议纪要 ↔ 签到记录 ↔ 整改意见 ↔ 落实记录。"],commonIssues:["会议频次不足","会议内容空洞","整改意见未落实","签到弄虚作假"],regulations:"《建设工程监理规范》GB/T50319；《关于落实建设工程安全生产监理责任的若干意见》四（二）；《建设工程安全生产管理条例》第十四条"},
+    {id:"5.3",title:"专项施工方案",content:"查阅审查表，核实是否对专项施工方案进行具体审查并签署意见，审查未通过的安全技术措施及专项施工方案不得实施。",methods:["1.查阅专项施工方案审查表。","2.查阅审查意见及签字。"],tips:["查审查意见是否具体、有针对性。","查专业监理工程师签字、总监审核签字。","查方案实施前是否已审查通过。","交叉验证：审查表 ↔ 审查意见 ↔ 签字记录 ↔ 方案实施记录。"],commonIssues:["审查意见空洞","签字缺失","未审查先实施"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》二（二）；《危险性较大的分部分项工程安全管理规定》"},
+    {id:"5.4",title:"交底监督",content:"查阅记录，核实是否监督施工单位进行安全技术交底。",methods:["1.查阅安全技术交底记录。","2.查阅交底影像资料及签字记录。"],tips:["查监理是否参检查施工单位交底情况。","交叉验证：交底记录 ↔ 签字记录。"],commonIssues:["专监未检查交底情况","施工单位交底签字弄虚作假"],regulations:"《建设工程安全生产管理条例》第二十七条；《建设工程监理规范》GB/T50319；《建设工程施工安全技术操作规程》"},
+    {id:"5.5",title:"日常巡查",content:"查阅监理日志，核实是否每日进行安全巡查。",methods:["1.查阅安全监理日志。","2.核对巡查频次。","3.查阅巡查发现问题记录。"],tips:["查是否每日巡查。","查问题描述是否具体、是否有整改要求。","交叉验证：安全日志 ↔ 施工日志 ↔ 监理日志。"],commonIssues:["巡查频次不足","问题记录空洞","日志未及时记录"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》一（二）；《建设工程监理规范》GB/T50319"},
+    {id:"5.6",title:"旁站监理",content:"查阅旁站记录，核实重要部位危大工程施工时是否进行旁站监理。",methods:["1.查阅监理旁站记录。","2.核对旁站时间与危大工程施工时间是否一致。","3.查阅旁站发现问题及处理记录。","4.查阅旁站人员签字。"],tips:["查危大工程清单与旁站记录是否匹配。","查旁站时间是否覆盖整个施工过程。","查发现问题、处理措施、结果。","查旁站人员签字。","交叉验证：旁站记录 ↔ 危大工程施工时间 ↔ 问题记录 ↔ 签字记录。"],commonIssues:["应旁站未旁站","旁站时间未覆盖全过程","问题记录缺失","签字弄虚作假"],regulations:"《危险性较大的分部分项工程安全管理规定》第十七条；《建筑工程项目总监理工程师质量安全责任六项规定》三；《房屋建筑工程施工旁站监理管理办法》"},
+    {id:"5.7",title:"隐患记录与整改",content:"查阅日志及通知单，核实巡查发现的隐患是否详细记录，是否及时发出书面整改要求并督促施工单位按三定要求落实。",methods:["1.查阅安全监理日志隐患记录。","2.查阅监理通知单。","3.查阅整改回复及复查记录。","4.核对隐患闭环管理情况。"],tips:["查阅施工单位是否逐项落实整改。","查阅书面回复是否有整改前后照片。","交叉验证：日志记录 ↔ 通知单 ↔ 整改回复 ↔ 复查记录。"],commonIssues:["隐患记录不详细","未发书面通知单","整改未复查"],regulations:"《建设工程安全生产管理条例》第十四条；《关于落实建设工程安全生产监理责任的若干意见》二（三）；《建设工程监理规范》GB/T50319"},
+    {id:"5.8",title:"应急演练监督",content:"查阅记录，核实是否督促施工单位组织应急演练。",methods:["1.查阅应急演练记录。","2.查阅演练问题及整改记录。","3.查阅签字。"],tips:["查演练发现问题是否有整改。","查人员签字、时间。","交叉验证：监督记录 ↔ 评估意见 ↔ 整改记录 ↔ 签字记录。"],commonIssues:["未参与演练","评估意见缺失","问题未整改","签字弄虚作假"],regulations:"《建设工程安全生产管理条例》第十四条；《建设工程监理规范》GB/T50319；《生产安全事故应急预案管理办法》"},
+    {id:"5.9",title:"设备、安全防护用具进场验收",content:"查阅记录，核实是否参与安全防护用具进场验收，核查施工起重机械等验收记录。",methods:["1.查阅安全防护用具进场报验记录。","2.查阅起重机械进场报验记录。"],tips:["查监理是否参与进场报验。","查监理审查意见。","交叉验证：验收记录 ↔ 核查记录 ↔ 签字记录 ↔ 备案记录。"],commonIssues:["无进场报验记录","报验记录无审查意见","签字弄虚作假"],regulations:"《建设工程安全生产管理条例》第三十四条；《关于落实建设工程安全生产监理责任的若干意见》二（三）；《建筑起重机械安全监督管理规定》"},
+    {id:"5.10",title:"特种作业人员持证核查",content:"核查特种作业人员是否持证上岗。",methods:["1.查阅特种作业人员资格报审表。","2.现场抽查持证上岗情况。","3.询问核查人员证书真伪方法。"],tips:["抽查现场特种作业人员证书是否真实且有效。","报审表是否有专监签字确认。","交叉验证：证书复印件 ↔ 查询记录 ↔ 核查记录 ↔ 现场人员。"],commonIssues:["未查询验证特种作业人员资格","核查记录缺失","人证不符"],regulations:"《建设工程安全生产管理条例》第二十五条；《关于落实建设工程安全生产监理责任的若干意见》一（一）；《特种作业人员安全技术培训考核管理规定》"}
+];
+
+// ======================= 全局变量与函数 =======================
+let inspectionData = JSON.parse(JSON.stringify(defaultData));
+const tableOrder = ['table1','table2','table3','table4','table5'];
+let currentTableIndex = 0;
+
+function saveToLocal() { 
+    localStorage.setItem('inspectionData', JSON.stringify(inspectionData));
+    // 同时保存检查结果状态
+    const results = [];
+    document.querySelectorAll('.inspection-item').forEach(item => {
+        const result = item.querySelector('input[name^="result"]:checked');
+        if (result) {
+            results.push({
+                table: item.dataset.table,
+                itemId: item.dataset.item,
+                result: result.value,
+                remark: item.querySelector('.remark-input')?.value || ''
+            });
+        }
+    });
+    const checkInfo = {
+        unit: document.getElementById('checkUnit').value,
+        checker: document.getElementById('checkerName').value,
+        date: document.getElementById('checkDate').value,
+        project: document.getElementById('projectName').value,
+        checkedUnit: document.getElementById('checkedUnit').value,
+        type: document.getElementById('checkType').value
+    };
+    localStorage.setItem('savedCheckData', JSON.stringify({ checkInfo, results }));
+}
+
+function loadSavedData() {
+    const saved = localStorage.getItem('savedCheckData');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            if (data.checkInfo) {
+                if (data.checkInfo.unit) document.getElementById('checkUnit').value = data.checkInfo.unit;
+                if (data.checkInfo.checker) document.getElementById('checkerName').value = data.checkInfo.checker;
+                if (data.checkInfo.date) document.getElementById('checkDate').value = data.checkInfo.date;
+                if (data.checkInfo.project) document.getElementById('projectName').value = data.checkInfo.project;
+                if (data.checkInfo.checkedUnit) document.getElementById('checkedUnit').value = data.checkInfo.checkedUnit;
+                if (data.checkInfo.type) document.getElementById('checkType').value = data.checkInfo.type;
+            }
+            // 结果将在表格渲染完成后恢复
+            window._savedResults = data.results;
+        } catch(e) {}
+    }
+}
+
+function renderCommonIssues(tableId, itemId) {
+    const item = inspectionData[tableId].find(i => i.id === itemId);
+    if (!item) return;
+    const container = document.getElementById(`issues-${tableId}-${itemId}`);
+    if (!container) return;
+    container.innerHTML = `
+        <div class="common-issues-container">
+            ${item.commonIssues.map(issue => `<span class="issue-tag" onclick="addIssueToRemarkAndNoncompliant('${tableId}','${itemId}','${issue.replace(/'/g, "\\'")}')">${issue}</span>`).join('')}
+            <div class="add-issue-input"><input type="text" placeholder="添加新问题..." id="new-issue-${tableId}-${itemId}"><button onclick="addCustomIssue('${tableId}','${itemId}')">➕</button></div>
         </div>
-    </div>
+    `;
+}
 
-    <!-- 批量编辑模态框 -->
-    <div id="editAllModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>✏️ 批量编辑检查项内容</h2>
-                <button class="close-btn" onclick="closeEditAllModal()">×</button>
+function addCustomIssue(tableId, itemId) {
+    const input = document.getElementById(`new-issue-${tableId}-${itemId}`);
+    if (input && input.value.trim()) {
+        const newIssue = input.value.trim();
+        const item = inspectionData[tableId].find(i => i.id === itemId);
+        if (item && !item.commonIssues.includes(newIssue)) {
+            item.commonIssues.push(newIssue);
+            saveToLocal();
+            renderCommonIssues(tableId, itemId);
+        }
+        input.value = '';
+    }
+}
+
+function addIssueToRemarkAndNoncompliant(tableId, itemId, issue) {
+    const itemDiv = document.querySelector(`[data-table="${tableId}"][data-item="${itemId}"]`);
+    if (!itemDiv) return;
+    const remark = itemDiv.querySelector('.remark-input');
+    const noncompliantRadio = itemDiv.querySelector('input[value="noncompliant"]');
+    if (remark && !remark.value.includes(issue)) {
+        remark.value = remark.value ? remark.value + '\n' + issue : issue;
+    }
+    if (noncompliantRadio) {
+        noncompliantRadio.checked = true;
+        updateItemStatus(tableId, itemId, 'noncompliant');
+        updateSummary();
+    }
+    itemDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function updateItemStatus(tableId, itemId, status) {
+    const item = document.querySelector(`[data-table="${tableId}"][data-item="${itemId}"]`);
+    if (item) item.dataset.status = status;
+    updateTableProgress(tableId);
+    saveToLocal();
+}
+
+function updateTableProgress(tableId) {
+    const container = document.getElementById(`${tableId}-container`);
+    if (!container) return;
+    const items = container.querySelectorAll('.inspection-item');
+    const completed = Array.from(items).filter(i => i.dataset.status !== 'pending').length;
+    const progress = (completed / items.length) * 100;
+    const fill = document.getElementById(`${tableId}-progress`);
+    if (fill) fill.style.width = `${progress}%`;
+    const text = document.getElementById(`${tableId}-progress-text`);
+    if (text) text.textContent = `${completed}/${items.length}`;
+}
+
+function getTableTitle(tableId) {
+    const titles = { table1:'建设单位项目负责人（10项）', table2:'施工单位项目经理（13项）', table3:'专职安全员（9项）', table4:'总监理工程师（12项）', table5:'安全专业监理工程师（10项）' };
+    return titles[tableId];
+}
+
+function filterItems(tableId, filter, btn) {
+    const container = document.getElementById(`${tableId}-container`);
+    if (!container) return;
+    container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    container.querySelectorAll('.inspection-item').forEach(item => {
+        const status = item.dataset.status;
+        item.style.display = (filter === 'all' || status === filter) ? 'block' : 'none';
+    });
+}
+
+function selectAll(tableId, status) {
+    const container = document.getElementById(`${tableId}-container`);
+    if (!container) return;
+    container.querySelectorAll('.inspection-item').forEach(item => {
+        const radio = item.querySelector(`input[value="${status}"]`);
+        if (radio) { radio.checked = true; updateItemStatus(tableId, item.dataset.item, status); }
+    });
+    updateSummary();
+}
+
+function clearTable(tableId) {
+    if (!confirm('确定清空该表格所有选择吗？')) return;
+    const container = document.getElementById(`${tableId}-container`);
+    if (!container) return;
+    container.querySelectorAll('.inspection-item').forEach(item => {
+        item.dataset.status = 'pending';
+        item.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        item.querySelector('.remark-input').value = '';
+    });
+    updateTableProgress(tableId);
+    updateSummary();
+    saveToLocal();
+}
+
+function goToNextItem(tableId, currentIndex) {
+    const data = inspectionData[tableId];
+    if (currentIndex < data.length - 1) {
+        const nextItem = document.getElementById(`item-${tableId}-${currentIndex+1}`);
+        if (nextItem) nextItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+        const idx = tableOrder.indexOf(tableId);
+        if (idx < tableOrder.length - 1 && confirm('当前表格已检查完毕，是否进入下一张表？')) {
+            navigateTable(1);
+        } else {
+            alert('所有检查项已完成！');
+        }
+    }
+}
+
+function navigateTable(delta) {
+    const newIdx = currentTableIndex + delta;
+    if (newIdx < 0 || newIdx >= tableOrder.length) return;
+    const currentTable = tableOrder[currentTableIndex];
+    const container = document.getElementById(`${currentTable}-container`);
+    const items = container.querySelectorAll('.inspection-item');
+    const completed = Array.from(items).filter(i => i.dataset.status !== 'pending').length;
+    if (delta > 0 && completed < items.length && !confirm(`当前表格还有 ${items.length - completed} 项未完成，确定进入下一表？`)) return;
+    currentTableIndex = newIdx;
+    const newTable = tableOrder[currentTableIndex];
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelector(`.nav-tab[data-table="${newTable}"]`).classList.add('active');
+    document.querySelectorAll('.table-container, .summary-panel').forEach(el => el.classList.add('hidden'));
+    if (newTable === 'summary') {
+        document.getElementById('summary-container').classList.remove('hidden');
+        updateSummary();
+    } else {
+        document.getElementById(`${newTable}-container`).classList.remove('hidden');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateSummary() {
+    let total = 0, completed = 0, compliant = 0, noncompliant = 0, notapp = 0;
+    const ncByResp = { table1:[], table2:[], table3:[], table4:[], table5:[] };
+    document.querySelectorAll('.inspection-item').forEach(item => {
+        total++;
+        const result = item.querySelector('input[name^="result"]:checked');
+        if (result) {
+            completed++;
+            if (result.value === 'compliant') compliant++;
+            else if (result.value === 'noncompliant') {
+                noncompliant++;
+                const title = item.querySelector('.item-title').textContent;
+                const id = item.dataset.item;
+                const remark = item.querySelector('.remark-input').value;
+                const tid = item.dataset.table;
+                ncByResp[tid].push({ id, title, remark });
+            } else if (result.value === 'notapplicable') notapp++;
+        }
+    });
+    document.getElementById('total-items').innerText = total;
+    document.getElementById('completed-items').innerText = completed;
+    document.getElementById('compliant-items').innerText = compliant;
+    document.getElementById('noncompliant-items').innerText = noncompliant;
+    document.getElementById('notapplicable-items').innerText = notapp;
+    document.getElementById('completion-rate').innerText = total ? Math.round(completed/total*100)+'%' : '0%';
+    const respNames = { table1:'建设单位项目负责人', table2:'施工单位项目经理', table3:'专职安全员', table4:'总监理工程师', table5:'安全专业监理工程师' };
+    const groupsDiv = document.getElementById('responsibility-groups');
+    groupsDiv.innerHTML = '<h3 style="margin-bottom:20px;color:#c53030;">📋 各责任人员不符合项清单</h3>';
+    let hasAny = false;
+    tableOrder.forEach(tid => {
+        if (ncByResp[tid].length) {
+            hasAny = true;
+            groupsDiv.innerHTML += `<div class="responsibility-group"><h4>🏢 ${respNames[tid]} <span class="issue-count">${ncByResp[tid].length}项</span></h4>${ncByResp[tid].map(it => `<div class="noncompliant-item"><strong>${it.id}</strong><div>${it.title}</div>${it.remark ? `<div class="item-remark">📝 备注：${it.remark}</div>` : ''}</div>`).join('')}</div>`;
+        }
+    });
+    if (!hasAny) groupsDiv.innerHTML += '<p class="no-issues">✅ 所有责任人员均无不符合项</p>';
+}
+
+function renderInspectionItems(tableId) {
+    const container = document.getElementById(`${tableId}-container`);
+    const data = inspectionData[tableId];
+    if (!data || !container) return;
+    const tableIndex = tableOrder.indexOf(tableId);
+    const hasPrev = tableIndex > 0;
+    const hasNext = tableIndex < tableOrder.length - 1;
+    container.innerHTML = `
+        <div class="table-header"><h2>${getTableTitle(tableId)}</h2><div class="progress-bar"><div class="progress-track"><div class="progress-fill" id="${tableId}-progress"></div></div><div class="progress-text" id="${tableId}-progress-text">0/${data.length}</div></div></div>
+        <div class="filter-bar"><button class="filter-btn active" onclick="filterItems('${tableId}','all',this)">全部</button><button class="filter-btn" onclick="filterItems('${tableId}','pending',this)">待检查</button><button class="filter-btn" onclick="filterItems('${tableId}','compliant',this)">符合</button><button class="filter-btn" onclick="filterItems('${tableId}','noncompliant',this)">不符合</button><button class="filter-btn" onclick="filterItems('${tableId}','notapplicable',this)">无此项</button></div>
+        ${data.map((item, idx) => `
+            <div class="inspection-item" data-table="${tableId}" data-item="${item.id}" data-status="pending" id="item-${tableId}-${idx}">
+                <div class="item-header"><span class="item-id">${item.id}</span><span class="item-title" id="title-${tableId}-${item.id}">${escapeHtml(item.title)}</span><button class="edit-btn" onclick="toggleEdit('${tableId}','${item.id}')">✏️ 编辑</button></div>
+                <div class="item-details">
+                    <div class="detail-section"><h4>📋 检查内容</h4><p id="content-${tableId}-${item.id}">${escapeHtml(item.content)}</p></div>
+                    <div class="detail-section"><h4>🔍 检查方式</h4><ul id="methods-${tableId}-${item.id}">${item.methods.map(m => `<li>${escapeHtml(m)}</li>`).join('')}</ul></div>
+                    <div class="detail-section"><h4>💡 检查要点</h4><ul id="tips-${tableId}-${item.id}">${item.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul></div>
+                    <div class="detail-section"><h4>⚠️ 常见问题</h4><div id="issues-${tableId}-${item.id}" class="common-issues-container"></div></div>
+                    <div class="detail-section"><h4>📖 法规依据</h4><p id="regulations-${tableId}-${item.id}">${escapeHtml(item.regulations)}</p></div>
+                </div>
+                <div class="item-result">
+                    <label><input type="radio" name="result-${tableId}-${item.id}" value="compliant" onchange="updateItemStatus('${tableId}','${item.id}','compliant'); updateSummary(); saveToLocal()"> ✅ 符合</label>
+                    <label><input type="radio" name="result-${tableId}-${item.id}" value="noncompliant" onchange="updateItemStatus('${tableId}','${item.id}','noncompliant'); updateSummary(); saveToLocal()"> ❌ 不符合</label>
+                    <label><input type="radio" name="result-${tableId}-${item.id}" value="notapplicable" onchange="updateItemStatus('${tableId}','${item.id}','notapplicable'); updateSummary(); saveToLocal()"> ⚪ 无此项</label>
+                </div>
+                <div class="item-remark"><textarea class="remark-input" placeholder="备注说明（点击常见问题自动填入并标记为不符合）..." onchange="saveToLocal()" oninput="saveToLocal()"></textarea></div>
+                <button class="next-item-btn" onclick="goToNextItem('${tableId}',${idx})">⬇️ 下一检查项</button>
             </div>
-            <div class="add-item-form">
-                <div class="form-group">
-                    <label>选择表格</label>
-                    <select id="editTableSelect" onchange="loadEditItems()">
-                        <option value="table1">表一：建设单位项目负责人</option>
-                        <option value="table2">表二：施工单位项目经理</option>
-                        <option value="table3">表三：专职安全员</option>
-                        <option value="table4">表四：总监理工程师</option>
-                        <option value="table5">表五：安全专业监理工程师</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>选择检查项</label>
-                    <select id="editItemSelect" onchange="loadEditItemData()">
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>检查内容标题</label>
-                    <input type="text" id="editItemTitle">
-                </div>
-                <div class="form-group">
-                    <label>检查方式（每行一条）</label>
-                    <textarea id="editItemMethods"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>专家技巧（每行一条）</label>
-                    <textarea id="editItemTips"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>常见问题（用逗号分隔）</label>
-                    <input type="text" id="editItemIssues">
-                </div>
-                <div class="form-group">
-                    <label>法规依据</label>
-                    <textarea id="editItemRegulations"></textarea>
-                </div>
-                <button class="action-btn primary" onclick="confirmEditItem()">💾 保存修改</button>
-            </div>
-        </div>
-    </div>
+        `).join('')}
+        <div class="action-bar"><button class="action-btn primary" onclick="selectAll('${tableId}','compliant')">✅ 全选符合</button><button class="action-btn warning" onclick="clearTable('${tableId}')">🔄 清空</button></div>
+        <div class="nav-buttons"><button class="nav-btn prev" onclick="navigateTable(-1)" ${!hasPrev ? 'disabled' : ''}>⬅️ 上一张表</button><button class="nav-btn next" onclick="navigateTable(1)" ${!hasNext ? 'disabled' : ''}>➡️ 下一张表</button></div>
+    `;
+    data.forEach(item => renderCommonIssues(tableId, item.id));
+    updateTableProgress(tableId);
+}
 
-    <!-- 整改通知书预览模态框 -->
-    <div id="noticeModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 900px;">
-            <div class="modal-header">
-                <h2>📄 整改通知书预览</h2>
-                <button class="close-btn" onclick="closeNoticeModal()">×</button>
-            </div>
-            <div id="noticePreview" class="notice-preview"></div>
-            <div class="action-bar" style="margin-top: 20px;">
-                <button class="action-btn primary" onclick="printNotice()">🖨️ 打印</button>
-                <button class="action-btn success" onclick="downloadNotice()">💾 下载</button>
-            </div>
-        </div>
-    </div>
+function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
 
-    <script>
-        // 完整的72项检查项数据
-        const inspectionData = {
-            table1: [
-                {id:"1.1",title:"施工许可：是否取得施工许可后开工建设",methods:["1.现场查验施工许可证原件","2.核对开工日期与许可证颁发日期","3.查阅施工日志、监理日志确认实际开工时间"],tips:["许可证原件看防伪标识","开工日期以第一份施工日志为准","如日期接近查许可证办理过程文件"],commonIssues:["先开工后办证","许可证过期仍施工","工程范围超出许可范围"],regulations:"《建筑法》第七条；《建设工程安全生产管理条例》第十条"},
-                {id:"1.2",title:"资质发包：是否将工程发包给具备相应资质的单位",methods:["1.查阅施工合同、分包合同原件","2.通过全国建筑市场监管平台查询资质","3.核对合同范围是否存在肢解发包"],tips:["小程序：全国建筑市场监管公共服务平台","肢解发包识别：同一单位工程分多个合同","指定分包识别：查甲指分包协议"],commonIssues:["资质挂靠","超资质承揽","肢解发包规避招标","指定分包收取回扣"],regulations:"《建设工程安全生产管理条例》第七条；《建筑法》第二十四条"},
-                {id:"1.3",title:"合理工期与造价：是否存在盲目压缩工期",methods:["1.查阅施工合同工期条款，对比定额工期","2.查阅招标文件、中标通知书","3.访谈施工单位确认是否存在压价行为"],tips:["合同工期小于定额工期70%需专项论证","中标价小于招标控制价85%需说明理由","以赶工费名义变相压价"],commonIssues:["阴阳合同","工期压缩无专项措施","以赶工费名义变相压价"],regulations:"《建设工程安全生产管理条例》第七条；《建设工程质量管理条例》第十条"},
-                {id:"1.4",title:"安全费用列支与拨付：是否将安全生产措施费用单独列支",methods:["1.查阅工程概算书、安全费用专用账户","2.核对银行转账凭证、发票","3.查阅安全费用使用台账"],tips:["安全费用比例：房屋建筑工程不低于造价2.5%","专款专用：查安全费用独立台账","拨付时效：滞后超过30天需说明"],commonIssues:["安全费用挪作他用","拨付不足","以现金支付规避监管"],regulations:"《建设工程安全生产管理条例》第八条；《企业安全生产费用提取和使用管理办法》"},
-                {id:"1.5",title:"资料提供：是否向参建单位提供真实准确的原始资料",methods:["1.查阅资料移交清单及签收记录","2.核对地质勘察报告、地下管线资料","3.访谈参建单位确认资料接收情况"],tips:["资料完整性：地下管线、地质勘察、周边建筑物","真实性验证：勘察报告查资质、签字、时间","访谈技巧：分别访谈，比对说法一致性"],commonIssues:["资料缺失导致施工风险","勘察报告造假","资料移交无签收记录"],regulations:"《建设工程安全生产管理条例》第六条；《建设工程质量管理条例》第九条"},
-                {id:"1.6",title:"设备材料采购合规：是否明示或暗示使用不合格材料",methods:["1.查阅甲供材料设备清单及采购合同","2.核对设计文件与材料规格","3.访谈施工单位确认是否存在指定供应商"],tips:["指定供应商识别：查会议纪要、工作联系单","材料合规：查检测报告、合格证、进场验收","以推荐名义变相指定"],commonIssues:["指定供应商收取回扣","甲供材料质量不合格","以推荐名义变相指定"],regulations:"《建设工程安全生产管理条例》第九条；《建设工程质量管理条例》第十四条"},
-                {id:"1.7",title:"施工图审查：施工图设计文件是否报审",methods:["1.查阅施工图审查合格书及审查意见书","2.通过施工图审查信息系统核对","3.核对设计变更是否重新报审"],tips:["审查合格书看审查机构资质、审查人员签字","重大变更识别：结构、消防、节能等变更需重新审查","审查机构无资质"],commonIssues:["未审先施","审查后重大变更未重新报审","审查机构无资质"],regulations:"《建设工程质量管理条例》第十一条；《房屋建筑和市政基础设施工程施工图设计文件审查管理办法》"},
-                {id:"1.8",title:"拆除工程资质与备案：拆除单位是否有资质",methods:["1.查阅拆除工程施工合同及资质证件","2.查阅住建部门备案回执","3.核对备案时间与开工时间间隔"],tips:["资质要求：建筑工程施工总承包或拆除工程专业承包","备案时间：开工前15日","现场核实：查拆除现场备案公示牌"],commonIssues:["无资质拆除","备案后超期未开工","拆除方案未经审批"],regulations:"《建设工程安全生产管理条例》第十一条；《建筑拆除工程安全技术规范》JGJ147"},
-                {id:"1.9",title:"安全措施备案：开工后15日内是否报送安全施工措施",methods:["1.查阅安全施工措施备案表及受理回执","2.查阅质量监督登记书、安全监督登记书","3.核对办理时间与开工时间"],tips:["备案时限：开工前或开工后15日内","监督手续：查监督注册号、监督人员配备","监督手续办理滞后"],commonIssues:["未备案先开工","备案资料与实际不符","监督手续办理滞后"],regulations:"《建设工程安全生产管理条例》第十条；《房屋建筑和市政基础设施工程质量监督管理规定》"},
-                {id:"1.10",title:"竣工验收组织：是否及时组织竣工验收",methods:["1.查阅竣工验收报告及验收记录","2.核对竣工报告收到日期与验收组织日期","3.查阅竣工验收备案表"],tips:["验收组织：建设单位组织，五方责任主体参加","验收条件：完成设计内容、资料齐全、检测合格","验收程序：查验收通知、会议记录、意见"],commonIssues:["未验收先交付","验收流于形式","验收人员资格不符"],regulations:"《建设工程质量管理条例》第十六条；《房屋建筑和市政基础设施工程竣工验收规定》"},
-                {id:"1.11",title:"档案管理：是否建立质量终身责任信息档案并移交",methods:["1.查阅工程档案目录及归档记录","2.查阅质量终身责任信息档案","3.核对档案移交城建档案馆的回执"],tips:["终身责任档案：五方责任主体项目负责人信息、承诺书","档案完整性：查归档目录与应归档清单比对","移交时限：竣工验收后3个月内"],commonIssues:["档案缺失","终身责任信息不全","移交超期"],regulations:"《建设工程质量管理条例》第二十一条；《建设工程文件归档规范》GB/T50328"},
-                {id:"1.12",title:"禁止未验先用：未经验收合格的工程是否擅自交付使用",methods:["1.现场查看工程使用状态","2.查阅物业移交记录、业主入住记录","3.核对竣工验收备案时间与实际使用时间"],tips:["使用痕迹识别：查水电费缴纳、物业收费、装修许可","入住证据：查门禁卡、快递收件、网络开通记录","现场观察：查办公、居住、经营痕迹"],commonIssues:["以试运行名义提前使用","部分楼层提前交付","以办公需要名义提前入驻"],regulations:"《建设工程质量管理条例》第五十八条；《建筑法》第六十一条"}
-            ],
-            table2: [
-                {id:"2.1",title:"执业资格与在岗履职：是否取得执业资格和安全考核证书",methods:["1.查阅建造师注册证书、安全B证原件","2.通过全国建筑市场监管平台查询","3.查阅考勤记录、会议签到、带班记录","4.查询名下其他项目任职情况"],tips:["证书查验：必须看原件，当场用手机查询","在岗核实：查签字文件、现场询问项目情况","挂证识别：查社保、工资发放、工作地点"],commonIssues:["证书挂靠","长期不在岗","同时担任多个项目经理","签字代签"],regulations:"《建筑施工项目经理质量安全责任十项规定》一；《注册建造师管理规定》"},
-                {id:"2.2",title:"质量安全管理体系：是否建立体系，配备专职管理人员",methods:["1.查阅项目组织架构及人员任命书","2.核对专职管理人员配备数量","3.查阅质量安全责任制及考核记录","4.查阅规章制度和操作规程清单"],tips:["人员配备：1万平以下1人，1-5万平2人，5万平以上3人","责任制落实：查考核、奖惩记录","体系运行：查运行记录、内审记录"],commonIssues:["人员配备不足","专职人员无证上岗","责任制只挂墙不落实","体系文件照搬模板"],regulations:"《建筑施工项目经理质量安全责任十项规定》二；《建设工程安全生产管理条例》第二十一条"},
-                {id:"2.3",title:"施工组织设计与专项方案：是否编制安全技术措施",methods:["1.查阅施工组织设计审批记录","2.查阅危大工程清单及专项方案","3.核对专家论证报告及修改记录","4.查阅方案交底记录"],tips:["危大工程识别：对照危大工程范围逐一核对","论证程序：查专家资质、签字、意见、修改回复","方案实施：查交底、检查记录、验收记录"],commonIssues:["危大工程漏识别","方案抄袭","论证后未按意见修改","方案与现场不符"],regulations:"《建筑施工项目经理质量安全责任十项规定》三；《危险性较大的分部分项工程安全管理规定》"},
-                {id:"2.4",title:"技术交底：是否组织质量安全技术交底",methods:["1.查阅分部分项工程技术交底记录","2.核对交底人与被交底人签字","3.现场抽查作业人员了解交底内容"],tips:["交底层级：公司向项目向班组向作业人员","签字核实：让被交底人现场再签一次对比","内容抽查：随机问作业人员交底内容"],commonIssues:["交底代签字","交底时间倒签","交底内容空洞","作业人员不知交底内容"],regulations:"《建筑施工项目经理质量安全责任十项规定》三；《建设工程安全生产管理条例》第二十七条"},
-                {id:"2.5",title:"材料设备检验：是否组织进场检验",methods:["1.查阅材料设备进场验收记录","2.核对产品合格证、质量证明文件","3.查阅复检报告","4.现场抽查材料标识状态"],tips:["验收程序：查验收人员签字、时间、内容","合格证核实：查编号、厂家、生产日期","复检要求：查应复检材料清单"],commonIssues:["先使用后检验","合格证造假","复检不合格仍使用","材料标识缺失"],regulations:"《建筑施工项目经理质量安全责任十项规定》四；《建设工程质量管理条例》第二十九条"},
-                {id:"2.6",title:"取样检测：是否组织涉及结构安全的试块试件取样检测",methods:["1.查阅见证取样送检记录","2.核对检测报告编号与送检记录","3.通过检测机构信息系统查询报告真伪","4.查阅见证人员资格证书"],tips:["见证要求：见证人员必须持证，比例符合规定","报告查询：必须通过官网或系统查询","取样真实性：查取样时间、地点、人员、照片"],commonIssues:["试块造假","检测报告造假","见证人员无证","送检比例不足"],regulations:"《建筑施工项目经理质量安全责任十项规定》四；《建设工程质量管理条例》第三十一条"},
-                {id:"2.7",title:"隐蔽工程验收：是否组织隐蔽工程验收",methods:["1.查阅隐蔽工程验收记录及影像资料","2.核对验收人员签字","3.查阅分部工程验收记录","4.比对施工日志与验收时间"],tips:["影像资料：查隐蔽前照片（带时间水印）","签字核实：对比同一人多处签字","时间逻辑：隐蔽验收必须在隐蔽前"],commonIssues:["未验收先隐蔽","验收记录后补","影像资料缺失或造假","签字代签"],regulations:"《建筑施工项目经理质量安全责任十项规定》五；《建筑工程施工质量验收统一标准》GB50300"},
-                {id:"2.8",title:"危大工程带班：危大工程施工期间是否现场带班",methods:["1.查阅项目负责人带班生产记录","2.核对带班时间与危大工程施工时间","3.查阅带班期间发现问题及处理记录","4.调取现场监控视频佐证"],tips:["带班要求：危大工程施工期间必须现场带班","记录核实：查签字、时间、内容","视频佐证：查现场监控视频"],commonIssues:["带班记录造假","带班时间不覆盖施工时间","带班记录内容空洞"],regulations:"《建筑施工项目经理质量安全责任十项规定》六；《建筑施工企业负责人及项目负责人施工现场带班暂行办法》"},
-                {id:"2.9",title:"设备验收与检查：是否组织起重机械等使用前验收",methods:["1.查阅起重机械安装验收记录及检测报告","2.查阅模板支架搭设验收记录","3.查阅设备日常检查维护记录","4.现场抽查设备安全装置有效性"],tips:["验收程序：安装单位自检向总包验收向监理验收向第三方检测","检测报告：查机构资质、检测项目、结论","日常检查：查日检、周检、月检记录"],commonIssues:["未验收先使用","验收流于形式","检测报告过期","安全装置失效"],regulations:"《建筑施工项目经理质量安全责任十项规定》六；《建筑起重机械安全监督管理规定》"},
-                {id:"2.10",title:"安全费用使用：是否将安全生产费用足额用于安全防护",methods:["1.查阅安全生产费用提取和使用台账","2.核对财务凭证与台账记录","3.现场核对安全设施与费用支出","4.查阅安全费用审计记录"],tips:["费用比例：查提取比例（房屋建筑2.5%）","专款专用：查独立台账","现场比对：查现场设施与费用支出匹配"],commonIssues:["安全费用挪用","台账与财务记录不符","现场设施与费用不匹配","以其他名义列支"],regulations:"《建筑施工项目经理质量安全责任十项规定》七；《企业安全生产费用提取和使用管理办法》"},
-                {id:"2.11",title:"防护用品与淘汰设备：作业人员是否配备防护用品",methods:["1.现场抽查作业人员防护用品佩戴","2.查阅防护用品发放记录","3.对照住建部淘汰目录检查现场设备","4.查阅设备进场验收记录"],tips:["防护用品：查安全帽、安全带、安全网三宝","淘汰目录：对照住建部最新版淘汰目录","现场识别：查设备铭牌、生产日期、型号"],commonIssues:["防护用品不合格","使用淘汰设备","防护用品发放不足","作业人员不佩戴"],regulations:"《建筑施工项目经理质量安全责任十项规定》七；《建设工程安全生产管理条例》第三十四条"},
-                {id:"2.12",title:"隐患排查治理：是否定期组织隐患排查",methods:["1.查阅隐患排查治理台账","2.核对隐患整改通知单及复查记录","3.查阅主管部门检查记录及整改回复","4.核查项目经理签字真实性"],tips:["排查频次：查日检、周检、月检、专项检查","隐患闭环：查发现向整改向复查向销号","重大隐患：查专项整改方案"],commonIssues:["隐患排查流于形式","整改不彻底","复查缺失","重大隐患未专项整改"],regulations:"《建筑施工项目经理质量安全责任十项规定》八；《安全生产法》第四十一条"},
-                {id:"2.13",title:"安全教育与特种持证：是否组织岗前安全教育",methods:["1.查阅三级安全教育记录及考核试卷","2.查阅特种作业人员证书原件","3.通过应急管理部官网查询证书真伪","4.现场抽查作业人员安全知识"],tips:["特种作业证书查询：https://cx.mem.gov.cn/","三级教育：公司级、项目级、班组级","证书查询：必须当场用手机查询"],commonIssues:["教育记录造假","特种作业无证上岗","证书过期","人证不符"],regulations:"《建筑施工项目经理质量安全责任十项规定》九；《特种作业人员安全技术培训考核管理规定》"},
-                {id:"2.14",title:"事故报告与应急救援：是否按规定报告事故",methods:["1.查阅事故报告记录及时间戳","2.查阅应急预案演练记录","3.查阅事故处置记录","4.访谈相关人员了解应急处置过程"],tips:["报告时限：1小时内向主管部门报告","预案演练：查年度计划、记录、评估报告","处置记录：查调查、处理、整改记录"],commonIssues:["事故瞒报、迟报","预案未演练","应急处置不当","事故整改不彻底"],regulations:"《建筑施工项目经理质量安全责任十项规定》十；《生产安全事故报告和调查处理条例》第九条"},
-                {id:"2.15",title:"现场文明施工：是否实行封闭围挡，三区分离",methods:["1.现场查看围挡设置情况","2.查看功能区划分标识","3.检查在建工程内是否设置宿舍","4.检查危险部位警示标志","5.检查消防器材配备及有效期"],tips:["围挡要求：市区主要路段大于等于2.5m，一般路段大于等于1.8m","三区分离：办公、生活、作业区必须分开","禁住规定：在建工程内严禁设置集体宿舍"],commonIssues:["围挡高度不足","三区未分离","在建工程住人","消防设施不足或过期"],regulations:"《建设工程安全生产管理条例》第二十八条；《建筑施工安全检查标准》JGJ59"},
-                {id:"2.16",title:"分包管理：是否与分包单位签订安全生产管理协议",methods:["1.查阅分包合同及安全生产管理协议","2.核对协议中安全责任条款","3.查阅分包单位资质及人员资格","4.查阅对分包单位的安全检查记录"],tips:["分包资质查询：小程序：全国建筑市场监管公共服务平台","协议内容：查安全责任划分、费用、事故处理","资质核实：查资质、安全生产许可证"],commonIssues:["未签安全协议","协议内容空洞","以包代管","分包单位无资质"],regulations:"《建设工程安全生产管理条例》第二十四条；《房屋建筑和市政基础设施工程施工分包管理办法》"},
-                {id:"2.17",title:"意外伤害保险：是否为危险作业人员办理意外伤害保险",methods:["1.查阅建筑意外伤害保险保单原件","2.核对参保人员名单与现场作业人员","3.查阅保险缴费凭证","4.核对保险有效期与施工工期"],tips:["保单核实：查保险公司资质、保单真伪","人员覆盖：查参保人员是否覆盖全部作业人员","有效期：查保险有效期是否覆盖整个施工期"],commonIssues:["未办理保险","保险过期","参保人员不足","保单造假"],regulations:"《建设工程安全生产管理条例》第三十八条；《建筑法》第四十八条"}
-            ],
-            table3: [
-                {id:"3.1",title:"人员配备与考核：是否按规定数量配备专职安全员",methods:["1.查阅专职安全员任命文件","2.查阅安全生产考核合格证书（C证）原件","3.通过住建部门系统查询证书有效性","4.核对配备数量是否符合工程规模要求"],tips:["配备标准：1万平以下1人，1-5万平2人，5万平以上3人","证书查询：当场用手机登录系统查询","人证核对：查证书照片与本人是否一致"],commonIssues:["配备数量不足","证书过期或无效","人证分离（挂靠）","专职安全员兼任其他职务"],regulations:"《建设工程安全生产管理条例》第二十三条；《建筑施工企业安全生产管理机构设置及专职安全生产管理人员配备办法》"},
-                {id:"3.2",title:"日常安全检查：是否每天开展安全检查",methods:["1.查阅安全员日常检查日志","2.核对检查频次是否每日","3.查阅危大工程施工期间监督记录","4.比对施工日志与安全检查记录"],tips:["日志真实性：查笔迹、记录详细程度","时间验证：查记录时间与施工时间是否匹配","危大监督：查监督时间是否覆盖整个施工过程"],commonIssues:["日志集中补做","检查流于形式","危大工程施工期间无监督记录","发现问题未跟踪整改"],regulations:"《建筑施工企业主要负责人、项目负责人和专职安全生产管理人员安全生产管理规定》第二十条；《建筑施工安全检查标准》JGJ59"},
-                {id:"3.3",title:"隐患处理与报告：发现隐患是否立即处理",methods:["1.查阅隐患整改通知单","2.核对隐患处理时间","3.查阅不能处理隐患的上报记录","4.查阅企业安全管理机构回复记录"],tips:["处理时效：一般隐患立即处理，重大隐患立即报告","报告路径：安全员向项目经理向企业安全机构向主管部门","报告形式：查书面报告、邮件、系统上报"],commonIssues:["隐患未及时处理","重大隐患瞒报","报告无书面记录","企业无回复记录"],regulations:"《安全生产事故隐患排查治理暂行规定》"},
-                {id:"3.4",title:"违章制止：是否制止和纠正违章指挥行为",methods:["1.查阅违章行为制止记录","2.查阅违章处理台账","3.访谈作业人员了解违章制止情况","4.查阅违章处罚记录"],tips:["制止记录：查时间、地点、人员、违章内容、处理措施","处罚验证：查处罚通知、罚款收据、整改记录","访谈技巧：分别访谈不同班组作业人员"],commonIssues:["无违章制止记录","记录过于简单","只记录不处理","对管理人员违章不敢制止"],regulations:"《建设工程安全生产管理条例》第二十三条；《安全生产法》第五十一条"},
-                {id:"3.5",title:"制度与预案参与：是否参与拟订安全生产规章制度",methods:["1.查阅安全生产规章制度编制记录","2.查阅操作规程编制参与记录","3.查阅应急预案编制会议纪要","4.核对安全员签字"],tips:["编制参与：查编制人员名单、会议纪要、签字","制度内容：查是否针对本项目特点","预案评审：查评审记录、专家意见、修改记录"],commonIssues:["制度照搬模板","安全员未参与编制","预案未评审","制度未培训宣贯"],regulations:"《安全生产法》第二十五条；《生产安全事故应急预案管理办法》"},
-                {id:"3.6",title:"教育培训：是否组织或参与安全生产教育和培训",methods:["1.查阅年度安全教育培训计划","2.查阅培训签到表及考核记录","3.查阅离岗/换岗人员培训记录","4.查阅培训影像资料"],tips:["培训计划：查年度、月度、专项培训计划","签到核实：对比签到笔迹","考核验证：查考核试卷、成绩、补考记录"],commonIssues:["培训记录造假","培训时间不足","无考核或考核流于形式","离岗换岗未培训"],regulations:"《安全生产法》第二十五条；《建设工程安全生产管理条例》第三十七条"},
-                {id:"3.7",title:"风险辨识与管控：是否开展安全风险和危险源辨识",methods:["1.查阅安全风险辨识清单","2.查阅风险评估报告","3.查阅风险分级管控台账","4.查阅重大危险源监控记录"],tips:["辨识全面性：查是否覆盖所有作业活动、设备设施、场所","评估方法：查评估方法是否科学","分级管控：查红橙黄蓝四色风险分布图"],commonIssues:["风险辨识不全","评估方法不当","管控措施不落实","风险清单未动态更新"],regulations:"《安全生产法》第二十五条；《安全生产风险分级管控体系通则》"},
-                {id:"3.8",title:"应急演练：是否组织或参与应急救援演练",methods:["1.查阅年度应急演练计划","2.查阅演练记录及影像资料","3.查阅演练评估报告","4.查阅演练后改进措施记录"],tips:["演练频次：综合预案每年至少1次，专项预案每半年至少1次","演练真实性：查演练照片、视频记录","评估报告：查评估内容、发现问题、改进建议"],commonIssues:["演练频次不足","演练记录造假","无评估报告","改进措施未落实"],regulations:"《安全生产法》第二十五条；《生产安全事故应急预案管理办法》第三十三条"},
-                {id:"3.9",title:"全面检查：是否每月至少组织一次安全生产全面检查",methods:["1.查阅月度全面检查记录","2.核对检查频次","3.查阅隐患清单及整改建议","4.查阅检查人员签字"],tips:["检查组织：查检查组成员","检查范围：查是否覆盖全场区、所有作业面","隐患清单：查隐患描述是否具体、整改建议是否可行"],commonIssues:["检查频次不足","检查范围不全","隐患描述笼统","签字代签"],regulations:"《建筑施工安全检查标准》JGJ59；《安全生产事故隐患排查治理暂行规定》"},
-                {id:"3.10",title:"整改督促与考核：是否督促履行安全生产职责",methods:["1.查阅整改督促记录","2.查阅整改复查记录","3.查阅安全生产考核记录","4.查阅考核结果应用记录"],tips:["督促记录：查督促时间、方式、对象、内容","复查验证：查复查时间、人员、结论","考核内容：查考核指标、周期、结果"],commonIssues:["督促无记录","复查流于形式","考核指标不合理","考核结果未应用"],regulations:"《安全生产法》第二十五条"},
-                {id:"3.11",title:"设备设施管理：是否建立安全防护用具及设备管理档案",methods:["1.查阅安全防护用具台账","2.查阅设备维修保养记录","3.查阅设备检查记录","4.对照淘汰目录检查现场设备"],tips:["台账完整：查设备名称、型号、编号、进场时间、检验状态","维保记录：查维保时间、内容、人员、验收","检查频次：查日检、周检、月检记录"],commonIssues:["台账不全","维保记录缺失","检查频次不足","使用淘汰设备"],regulations:"《建设工程安全生产管理条例》第三十四条；《劳动防护用品监督管理规定》"},
-                {id:"3.12",title:"危险作业监护：危险作业时是否安排专门人员进行现场安全管理",methods:["1.查阅危险作业审批单","2.查阅现场监护人员安排记录","3.现场检查监护人员在岗情况","4.查阅监护记录"],tips:["作业审批：查审批流程、人员、时间（必须在作业前）","监护人员：查资格、培训记录、在岗情况","现场核实：现场检查时核实监护人员是否在场"],commonIssues:["无审批先作业","监护人员不在岗","监护人员无资格","监护记录缺失"],regulations:"《安全生产法》第四十三条；《危险化学品企业特殊作业安全规范》GB30871"},
-                {id:"3.13",title:"重大危险源管理：重大危险源是否登记建档",methods:["1.查阅重大危险源登记档案","2.查阅检测评估报告","3.查阅监控记录","4.查阅责任人任命文件"],tips:["辨识标准：查重大危险源辨识是否符合国家标准","登记建档：查档案内容","检测评估：查检测频次、评估报告、备案记录"],commonIssues:["重大危险源未辨识","档案不全","检测评估超期","责任人不明确"],regulations:"《安全生产法》第三十七条；《危险化学品重大危险源监督管理暂行规定》"},
-                {id:"3.14",title:"信息通报：事故隐患排查治理情况是否向从业人员通报",methods:["1.查阅职工大会/职代会会议纪要","2.查阅信息公示栏照片","3.查阅通报记录","4.访谈从业人员了解知情情况"],tips:["通报频次：查是否定期通报（至少每季度）","通报内容：查隐患数量、类型、整改情况、预防措施","公示验证：查公示栏位置、内容、更新时间"],commonIssues:["未定期通报","通报内容不完整","公示栏位置不显眼","作业人员不知情"],regulations:"《安全生产法》第三十八条；《企业安全生产信息公开规定》"},
-                {id:"3.15",title:"班组与班前检查：班组每周是否至少开展一次安全检查",methods:["1.查阅班组安全检查记录","2.查阅班前检查记录","3.核对检查频次","4.查阅检查人员签字"],tips:["班组检查：查检查时间、内容、人员、问题整改","班前检查：查班前会记录、岗位检查表、签字确认","频次核实：查记录时间是否连续、是否有遗漏"],commonIssues:["班组检查频次不足","班前检查流于形式","记录补做","签字代签"],regulations:"《建筑施工安全检查标准》JGJ59；《企业安全生产标准化基本规范》GB/T33000"}
-            ],
-            table4: [
-                {id:"4.1",title:"总监资格与履职：是否取得注册执业资格，是否在岗履职",methods:["1.查阅注册监理工程师证书原件","2.通过全国建筑市场监管平台查询","3.查阅考勤记录","4.查询名下其他项目任职情况"],tips:["证书查验：必须看原件，当场用手机查询","注册信息：查注册专业、单位、有效期","多项目任职：平台查询同一人注册项目数量（不得超过3个）"],commonIssues:["证书挂靠","长期不在岗","同时担任过多项目总监","签字代签"],regulations:"《建筑工程项目总监理工程师质量安全责任六项规定》一；《注册监理工程师管理规定》"},
-                {id:"4.2",title:"监理规划与细则：是否编制包括安全监理内容的监理规划",methods:["1.查阅监理规划审批记录","2.查阅安全监理实施细则","3.核对编制时间与开工时间","4.查阅危大工程监理细则"],tips:["编制时间：监理规划应在签订监理合同及收到设计文件后编制","安全内容：查安全监理目标、内容、方法、措施","细则编制：中型及以上项目、危大工程必须编制"],commonIssues:["监理规划无安全内容","编制时间滞后","应编细则未编制","细则照搬模板"],regulations:"《建设工程安全生产管理条例》第十四条；《建设工程监理规范》GB/T50319"},
-                {id:"4.3",title:"施组与专方审查：是否组织审查施工组织设计中的安全技术措施",methods:["1.查阅施工组织设计审查表","2.查阅专项施工方案审查记录","3.核对总监签字","4.查阅审查意见及修改回复"],tips:["审查程序：施工单位报审向专业监理工程师审查向总监审核签字","审查内容：查是否符合强制性标准、是否有针对性、是否可行","签字核实：对比总监多处签字"],commonIssues:["审查流于形式","总监未签字","审查意见未落实","方案修改后未重新审查"],regulations:"《建设工程安全生产管理条例》第十四条；《建筑工程项目总监理工程师质量安全责任六项规定》二"},
-                {id:"4.4",title:"分包资质审查：是否组织审查分包单位资格",methods:["1.查阅分包单位资格报审表","2.查阅资质审查记录","3.查阅转包违法分包报告记录","4.查阅向主管部门报告的文件"],tips:["资质查询：小程序：全国建筑市场监管公共服务平台","资质审查：查分包单位资质、安全生产许可证、人员资格","转包识别：查分包单位是否实际施工、管理人员是否到位"],commonIssues:["资质审查不严","转包违法分包未识别","发现问题未报告","报告不及时"],regulations:"《建设工程安全生产管理条例》第十四条；《房屋建筑和市政基础设施工程施工分包管理办法》"},
-                {id:"4.5",title:"特种人员核查：是否督促落实持证上岗制度",methods:["1.查阅特种作业人员资格报审表","2.通过应急管理部官网查询证书真伪","3.查阅核查记录","4.现场抽查持证上岗情况"],tips:["特种作业证书查询：https://cx.mem.gov.cn/","证书查询：必须当场通过官网查询","人证核对：查证书照片与本人是否一致"],commonIssues:["证书造假","证书过期","人证不符","无证上岗"],regulations:"《特种作业人员安全技术培训考核管理规定》"},
-                {id:"4.6",title:"监理实施方式：是否组织监理人员采取旁站、巡视和平行检验",methods:["1.查阅监理日志","2.查阅旁站记录","3.查阅巡视记录","4.查阅平行检验记录","5.核对实施频次"],tips:["旁站：查危大工程、关键部位是否有旁站记录","巡视：查巡视频次、巡视内容、发现问题","平行检验：查检验项目、检验结果、签字记录"],commonIssues:["旁站记录缺失","巡视频次不足","平行检验未做","记录不一致"],regulations:"《建筑工程项目总监理工程师质量安全责任六项规定》三；《建设工程监理规范》GB/T50319"},
-                {id:"4.7",title:"材料设备检查：是否对施工单位报审的建筑材料进行检查",methods:["1.查阅材料设备报审表","2.查阅进场验收记录","3.查阅不合格材料处理记录","4.核对监理签字"],tips:["报审程序：施工单位报审向监理审查向签字确认","验收参与：查监理是否参与进场验收","不合格处理：查不合格材料退场记录、监理见证"],commonIssues:["未审查先使用","不合格材料未退场","监理签字代签","验收记录缺失"],regulations:"《建筑工程项目总监理工程师质量安全责任六项规定》三；《建设工程质量管理条例》第三十七条"},
-                {id:"4.8",title:"隐患整改与停工：发现安全事故隐患是否要求整改",methods:["1.查阅监理通知单","2.查阅工程暂停令","3.查阅整改回复及复查记录","4.查阅向建设单位报告记录"],tips:["通知单：查隐患描述、整改要求、整改时限","停工令：查停工条件是否符合规定、总监签字","整改复查：查整改回复、复查时间、复查结论"],commonIssues:["发现隐患未发通知单","应停工未停工","整改未复查","未报告建设单位"],regulations:"《建设工程安全生产管理条例》第十四条；《建筑工程项目总监理工程师质量安全责任六项规定》五"},
-                {id:"4.9",title:"拒不整改报告：施工单位拒不整改的是否及时向主管部门报告",methods:["1.查阅向主管部门报告的文件","2.查阅报告时间记录","3.查阅主管部门回复记录","4.核对报告时效性"],tips:["报告条件：施工单位拒不整改或不停止施工","报告时限：发现后应立即报告（一般24小时内）","报告形式：查书面报告、系统上报、电话记录"],commonIssues:["应报告未报告","报告不及时","报告无书面记录","主管部门无回复"],regulations:"《建设工程安全生产管理条例》第十四条；《建筑工程项目总监理工程师质量安全责任六项规定》五"},
-                {id:"4.10",title:"强标实施：是否依照法律法规和强制性标准实施监理",methods:["1.查阅监理日志中强标执行记录","2.查阅工程暂停令","3.查阅违反强标处理记录","4.查阅整改复查记录"],tips:["强标清单：查项目适用的强制性标准清单","违反识别：查监理是否识别违反强标行为","暂停令：查暂停令签发条件、总监签字、时间"],commonIssues:["违反强标未识别","应暂停未暂停","暂停令无总监签字","整改未验证"],regulations:"《建设工程安全生产管理条例》第十四条；《实施工程建设强制性标准监督规定》"},
-                {id:"4.11",title:"设备验收核查：是否核查起重机械、脚手架、模板等验收手续",methods:["1.查阅起重机械验收核查记录","2.查阅脚手架验收核查记录","3.查阅验收手续完整性","4.核对监理签字"],tips:["验收程序：安装单位自检向总包验收向监理核查向第三方检测","手续完整：查验收表、检测报告、使用登记证","监理核查：查核查内容、核查意见、签字"],commonIssues:["验收手续不全","监理未核查","检测报告过期","无验收标识"],regulations:"《建筑起重机械安全监督管理规定》；《建设工程监理规范》GB/T50319"},
-                {id:"4.12",title:"安全费用监督：是否检查安全生产费用的使用情况",methods:["1.查阅安全费用使用检查记录","2.查阅安全费用支付审核记录","3.查阅安全费用台账核查记录"],tips:["检查频次：查是否定期检查（至少每月）","检查内容：查提取比例、使用范围、支付凭证","支付审核：查监理是否审核安全费用支付申请"],commonIssues:["未定期检查","检查流于形式","支付审核不严","现场与台账不符"],regulations:"《建设工程监理规范》GB/T50319；《企业安全生产费用提取和使用管理办法》"},
-                {id:"4.13",title:"竣工验收：是否审查竣工申请，是否参加竣工验收",methods:["1.查阅竣工申请审查意见","2.查阅竣工验收记录","3.查阅工程质量评估报告","4.核对总监签字"],tips:["竣工审查：查竣工条件是否满足、资料是否齐全","验收参与：查监理是否参加验收、是否发表意见","质量评估：查评估报告内容、结论、总监签字"],commonIssues:["竣工审查不严","未参加验收","评估报告缺失","不合格按合格签认"],regulations:"《建筑工程项目总监理工程师质量安全责任六项规定》六；《建设工程质量管理条例》第三十七条"},
-                {id:"4.14",title:"应急预案审查：是否审核施工单位应急救援预案",methods:["1.查阅应急预案审查记录","2.查阅安全防护措施费用计划审查记录","3.查阅审查意见"],tips:["预案审查：查预案内容、针对性、可行性、评审记录","费用计划：查费用提取比例、使用范围、支付计划","审查意见：查审查意见是否具体、是否有修改要求"],commonIssues:["预案审查流于形式","费用计划审查不严","审查意见空洞","无总监签字"],regulations:"《建设工程监理规范》GB/T50319；《生产安全事故应急预案管理办法》"}
-            ],
-            table5: [
-                {id:"5.1",title:"专监资格：是否具备相应资格，需经安全生产教育培训后方可上岗",methods:["1.查阅监理工程师证书","2.查阅安全生产教育培训记录及考核合格证明","3.通过住建部门系统查询资格有效性"],tips:["资格证书：查注册监理工程师证书或监理员证书","安全培训：查培训时间、内容、考核成绩、合格证明","人证核对：查证书照片与本人是否一致"],commonIssues:["无资格证书","安全培训缺失","证书过期","人证不符"],regulations:"《建设工程安全生产管理条例》第十四条；《建设工程监理规范》GB/T50319"},
-                {id:"5.2",title:"日常巡查：是否每日进行安全巡查",methods:["1.查阅安全监理日志","2.核对巡查频次","3.查阅危大工程巡视记录","4.查阅巡查发现问题记录"],tips:["巡查频次：查是否每日巡查、有无遗漏","危大巡视：查危大工程施工期间是否有专项巡视","问题记录：查问题描述是否具体、是否有整改要求"],commonIssues:["巡查频次不足","危大工程无专项巡视","问题记录空洞","日志补做"],regulations:"《建设工程安全生产管理条例》第十四条；《建设工程监理规范》GB/T50319"},
-                {id:"5.3",title:"隐患记录与整改：巡查发现的隐患是否详细记录",methods:["1.查阅安全监理日志隐患记录","2.查阅监理通知单","3.查阅整改回复及复查记录","4.核对隐患闭环管理情况"],tips:["隐患记录：查时间、地点、内容、照片","通知单：查隐患描述、整改要求、整改时限","整改回复：查施工单位回复、整改措施"],commonIssues:["隐患记录不全","未发书面通知单","整改未复查","隐患未闭环"],regulations:"《建设工程安全生产管理条例》第十四条；《建设工程监理规范》GB/T50319"},
-                {id:"5.4",title:"专方具体审查：是否对专项方案进行具体审查并签署意见",methods:["1.查阅专项施工方案审查表","2.查阅审查意见及签字","3.查阅方案实施前审查状态","4.查阅未通过方案的处理记录"],tips:["审查内容：查审查意见是否具体、有针对性","签字验证：查专业监理工程师签字、总监审核签字","实施状态：查方案实施前是否已审查通过"],commonIssues:["审查意见空洞","签字缺失","未审查先实施","未通过方案仍实施"],regulations:"《建设工程安全生产管理条例》第十四条；《危险性较大的分部分项工程安全管理规定》"},
-                {id:"5.5",title:"旁站监理：危大工程施工时是否进行旁站监理",methods:["1.查阅旁站监理记录","2.核对旁站时间与危大工程施工时间","3.查阅旁站发现问题及处理记录","4.查阅旁站人员签字"],tips:["旁站范围：查危大工程清单与旁站记录是否匹配","旁站时间：查旁站时间是否覆盖整个施工过程","问题记录：查发现问题、处理措施、结果"],commonIssues:["应旁站未旁站","旁站时间不足","问题记录缺失","签字代签"],regulations:"《危险性较大的分部分项工程安全管理规定》第十七条；《房屋建筑工程施工旁站监理管理办法》"},
-                {id:"5.6",title:"专题会议：是否定期组织或参加安全专题会议",methods:["1.查阅安全专题会议纪要","2.查阅会议频次记录","3.查阅整改意见及落实记录","4.查阅参会人员签到"],tips:["会议频次：查是否定期召开（至少每月）","会议内容：查问题分析、整改意见、责任分工","落实验证：查整改意见是否有落实记录"],commonIssues:["会议频次不足","会议内容空洞","整改意见未落实","签到造假"],regulations:"《建设工程监理规范》GB/T50319；《建设工程安全生产管理条例》第十四条"},
-                {id:"5.7",title:"资料审核与归档：是否审核施工单位报送的安全资料",methods:["1.查阅安全资料审核记录","2.查阅安全监理资料归档目录","3.查阅归档时间","4.查阅资料完整性"],tips:["审核记录：查审核内容、审核意见、签字","归档目录：查归档资料清单、分类、编号","归档时间：查是否及时归档（一般每月）"],commonIssues:["资料审核不严","归档不及时","资料缺失","归档不规范"],regulations:"《建设工程安全生产管理条例》第十四条；《建设工程监理规范》GB/T50319；《建设工程文件归档规范》GB/T50328"},
-                {id:"5.8",title:"整改复查：是否对整改情况进行复查",methods:["1.查阅整改复查记录","2.查阅复查意见及签字","3.查阅复工令","4.核对复查时效性"],tips:["复查时间：查整改完成后是否及时复查","复查内容：查复查是否全面、是否有照片","签字验证：查专业监理工程师签字、总监审核"],commonIssues:["复查不及时","复查流于形式","签字缺失","无复工令先复工"],regulations:"《建设工程安全生产管理条例》第十四条；《建设工程监理规范》GB/T50319"},
-                {id:"5.9",title:"设备验收参与：是否参与安全防护用具进场验收",methods:["1.查阅安全防护用具验收记录","2.查阅起重机械验收核查记录","3.查阅安全监理人员签字","4.查阅备案记录"],tips:["验收参与：查监理是否参与进场验收","核查记录：查核查内容、核查意见","签字验证：查安全监理人员签字、时间"],commonIssues:["未参与验收","核查记录缺失","签字代签","未备案"],regulations:"《建设工程安全生产管理条例》第三十四条；《建筑起重机械安全监督管理规定》"},
-                {id:"5.10",title:"持证核查：是否具体核查特种作业人员证书真伪及有效性",methods:["1.查阅特种作业人员证书复印件","2.查阅证书核查记录","3.通过官网查询验证记录","4.查阅核查人员签字"],tips:["特种作业证书查询：https://cx.mem.gov.cn/","证书查询：查是否有官网查询截图或记录","核查记录：查核查时间、核查人员、核查结论"],commonIssues:["未查询验证","核查记录缺失","证书过期","人证不符"],regulations:"《建设工程安全生产管理条例》第二十五条；《特种作业人员安全技术培训考核管理规定》"},
-                {id:"5.11",title:"交底监督：是否监督施工单位进行安全技术交底",methods:["1.查阅安全技术交底监督记录","2.查阅交底参与记录","3.查阅交底内容审核记录","4.查阅监督人员签字"],tips:["监督记录：查监督时间、地点、内容","参与记录：查监理是否参与交底会议","内容审核：查交底内容是否有监理审核意见"],commonIssues:["未监督交底","监督记录缺失","未参与交底","签字代签"],regulations:"《建设工程安全生产管理条例》第二十七条；《建设工程监理规范》GB/T50319"},
-                {id:"5.12",title:"防护与消防检查：临边洞口等防护措施是否符合标准",methods:["1.现场检查临边洞口防护","2.检查消防设施配备及有效期","3.查阅防护设施验收记录","4.查阅消防检查记录"],tips:["临边洞口：查防护栏杆高度、强度、标识","消防设施：查灭火器类型、数量、位置、有效期","验收记录：查防护设施验收记录、监理签字"],commonIssues:["防护设施不足","消防设施过期","验收记录缺失","消防检查未做"],regulations:"《建设工程安全生产管理条例》第二十八条；《建设工程施工现场消防安全技术规范》GB50720"},
-                {id:"5.13",title:"演练监督：是否监督施工单位组织应急演练",methods:["1.查阅应急演练监督记录","2.查阅演练评估意见","3.查阅演练问题及整改记录","4.查阅监督人员签字"],tips:["监督记录：查监督时间、内容、人员","评估意见：查监理对演练的评估意见","问题整改：查演练发现问题是否有整改"],commonIssues:["未监督演练","评估意见缺失","问题未整改","签字代签"],regulations:"《建设工程安全生产管理条例》第十四条；《生产安全事故应急预案管理办法》"},
-                {id:"5.14",title:"定期报告：是否定期向总监理工程师报告安全情况",methods:["1.查阅安全监理报告","2.查阅报告频次记录","3.查阅报告内容完整性","4.查阅总监签阅记录"],tips:["报告频次：查是否定期报告（至少每周）","报告内容：查隐患、整改、风险、建议等","完整性：查报告内容是否全面"],commonIssues:["报告频次不足","报告内容不全","总监未签阅","报告流于形式"],regulations:"《建设工程监理规范》GB/T50319；《建设工程安全监理规程》"}
-            ]
-        };
-
-        // 责任人员名称映射
-        const responsibilityNames = {
-            table1: '建设单位项目负责人',
-            table2: '施工单位项目经理',
-            table3: '专职安全员',
-            table4: '总监理工程师',
-            table5: '安全专业监理工程师'
-        };
-
-        // 当前表格索引
-        let currentTableIndex = 0;
-        const tableOrder = ['table1', 'table2', 'table3', 'table4', 'table5'];
-
-        // 自定义常见问题管理 - 修复BUG版本
-        class CommonIssueManager {
-            constructor() {
-                this.customIssues = JSON.parse(localStorage.getItem('customCommonIssues')) || {};
+function toggleEdit(tableId, itemId) {
+    const btn = event.target;
+    const titleEl = document.getElementById(`title-${tableId}-${itemId}`);
+    const contentEl = document.getElementById(`content-${tableId}-${itemId}`);
+    const methodsEl = document.getElementById(`methods-${tableId}-${itemId}`);
+    const tipsEl = document.getElementById(`tips-${tableId}-${itemId}`);
+    const regulationsEl = document.getElementById(`regulations-${tableId}-${itemId}`);
+    const issuesContainer = document.getElementById(`issues-${tableId}-${itemId}`);
+    const isEditing = btn.classList.contains('active');
+    if (isEditing) {
+        const item = inspectionData[tableId].find(i => i.id === itemId);
+        if (item) {
+            item.title = titleEl.textContent.trim();
+            item.content = contentEl.textContent.trim();
+            item.methods = Array.from(methodsEl.querySelectorAll('li')).map(li => li.textContent.trim());
+            item.tips = Array.from(tipsEl.querySelectorAll('li')).map(li => li.textContent.trim());
+            item.regulations = regulationsEl.textContent.trim();
+            const editableDiv = issuesContainer.querySelector('.common-issues-editable');
+            if (editableDiv) {
+                item.commonIssues = editableDiv.textContent.split(/[，,]+/).map(s => s.trim()).filter(s => s);
             }
-
-            // 生成唯一ID用于事件绑定
-            generateIssueId(tableId, itemId, issue) {
-                return `issue_${tableId}_${itemId}_${this.hashCode(issue)}`;
-            }
-
-            // 简单哈希函数
-            hashCode(str) {
-                let hash = 0;
-                for (let i = 0; i < str.length; i++) {
-                    const char = str.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash;
-                }
-                return Math.abs(hash).toString(36);
-            }
-
-            addIssue(tableId, itemId, issue) {
-                if (!this.customIssues[tableId]) this.customIssues[tableId] = {};
-                if (!this.customIssues[tableId][itemId]) this.customIssues[tableId][itemId] = [];
-                if (!this.customIssues[tableId][itemId].includes(issue)) {
-                    this.customIssues[tableId][itemId].push(issue);
-                    this.save();
-                    this.renderIssueInput(tableId, itemId);
-                }
-            }
-
-            removeIssue(tableId, itemId, issue) {
-                if (this.customIssues[tableId] && this.customIssues[tableId][itemId]) {
-                    this.customIssues[tableId][itemId] = this.customIssues[tableId][itemId].filter(i => i !== issue);
-                    this.save();
-                    this.renderIssueInput(tableId, itemId);
-                }
-            }
-
-            save() {
-                localStorage.setItem('customCommonIssues', JSON.stringify(this.customIssues));
-            }
-
-            getIssues(tableId, itemId) {
-                const defaultIssues = inspectionData[tableId]?.find(i => i.id === itemId)?.commonIssues || [];
-                const customIssues = this.customIssues[tableId]?.[itemId] || [];
-                return [...defaultIssues, ...customIssues];
-            }
-
-            // 修复BUG：使用data属性而非onclick内联函数
-            renderIssueInput(tableId, itemId) {
-                const container = document.querySelector(`[data-table="${tableId}"][data-item="${itemId}"] .common-issues-container`);
-                if (!container) return;
-                const issues = this.getIssues(tableId, itemId);
-                
-                container.innerHTML = issues.map(issue => {
-                    const issueId = this.generateIssueId(tableId, itemId, issue);
-                    const isCustom = this.customIssues[tableId]?.[itemId]?.includes(issue);
-                    return `
-                        <span class="issue-tag" data-issue="${this.escapeHtml(issue)}" data-table="${tableId}" data-item="${itemId}" onclick="handleIssueClick(this)">
-                            ${this.escapeHtml(issue)}
-                            ${isCustom ? `<button class="remove-btn" onclick="handleRemoveIssue(event, '${tableId}', '${itemId}', '${this.escapeHtml(issue)}')">×</button>` : ''}
-                        </span>
-                    `;
-                }).join('') + `
-                    <div class="add-issue-input">
-                        <input type="text" placeholder="添加新问题..." id="new-issue-${tableId}-${itemId}" onkeypress="if(event.key==='Enter') issueManager.addIssueFromInput('${tableId}', '${itemId}')">
-                        <button onclick="issueManager.addIssueFromInput('${tableId}', '${itemId}')">➕</button>
-                    </div>
-                `;
-            }
-
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-
-            addIssueFromInput(tableId, itemId) {
-                const input = document.getElementById(`new-issue-${tableId}-${itemId}`);
-                if (input && input.value.trim()) {
-                    this.addIssue(tableId, itemId, input.value.trim());
-                    input.value = '';
-                }
-            }
+            saveToLocal();
+            inspectionData[tableId] = inspectionData[tableId]; // 触发更新
         }
+        titleEl.contentEditable = 'false';
+        contentEl.contentEditable = 'false';
+        methodsEl.contentEditable = 'false';
+        tipsEl.contentEditable = 'false';
+        regulationsEl.contentEditable = 'false';
+        renderCommonIssues(tableId, itemId);
+        btn.classList.remove('active');
+        btn.textContent = '✏️ 编辑';
+    } else {
+        titleEl.contentEditable = 'true';
+        contentEl.contentEditable = 'true';
+        methodsEl.contentEditable = 'true';
+        tipsEl.contentEditable = 'true';
+        regulationsEl.contentEditable = 'true';
+        const currentIssues = inspectionData[tableId].find(i => i.id === itemId)?.commonIssues || [];
+        const editableDiv = document.createElement('div');
+        editableDiv.className = 'common-issues-editable';
+        editableDiv.contentEditable = 'true';
+        editableDiv.style.border = '1px solid #ccc';
+        editableDiv.style.padding = '8px';
+        editableDiv.style.borderRadius = '8px';
+        editableDiv.style.minHeight = '60px';
+        editableDiv.textContent = currentIssues.join(', ');
+        issuesContainer.innerHTML = '';
+        issuesContainer.appendChild(editableDiv);
+        btn.classList.add('active');
+        btn.textContent = '💾 保存';
+    }
+}
 
-        const issueManager = new CommonIssueManager();
+function resetAllData() {
+    if (confirm('重置将清除所有已填写的检查结果和编辑内容，恢复为初始默认数据。确定吗？')) {
+        inspectionData = JSON.parse(JSON.stringify(defaultData));
+        localStorage.removeItem('savedCheckData');
+        localStorage.setItem('inspectionData', JSON.stringify(inspectionData));
+        tableOrder.forEach(tid => renderInspectionItems(tid));
+        document.getElementById('checkUnit').value = '';
+        document.getElementById('checkerName').value = '';
+        document.getElementById('checkDate').valueAsDate = new Date();
+        document.getElementById('projectName').value = '';
+        document.getElementById('checkedUnit').value = '';
+        document.getElementById('checkType').value = '日常检查';
+        alert('已重置为默认数据。');
+        if (!document.getElementById('summary-container').classList.contains('hidden')) updateSummary();
+    }
+}
 
-        // 修复BUG：处理常见问题点击
-        function handleIssueClick(element) {
-            const issue = element.dataset.issue;
-            const tableId = element.dataset.table;
-            const itemId = element.dataset.item;
-            
-            addIssueToRemarkAndNoncompliant(tableId, itemId, issue);
-        }
-
-        // 修复BUG：处理删除按钮点击
-        function handleRemoveIssue(event, tableId, itemId, issue) {
-            event.stopPropagation();
-            issueManager.removeIssue(tableId, itemId, issue);
-        }
-
-        // 点击常见问题后，自动关联为不符合
-        function addIssueToRemarkAndNoncompliant(tableId, itemId, issue) {
-            const item = document.querySelector(`[data-table="${tableId}"][data-item="${itemId}"]`);
-            const remark = item.querySelector('.remark-input');
-            const noncompliantRadio = item.querySelector('input[value="noncompliant"]');
-            
-            // 添加问题到备注
-            if (remark) {
-                if (!remark.value.includes(issue)) {
-                    remark.value = remark.value ? remark.value + '\n' + issue : issue;
-                }
-            }
-            
-            // 自动选择"不符合"选项
-            if (noncompliantRadio) {
-                noncompliantRadio.checked = true;
-                updateItemStatus(tableId, itemId, 'noncompliant');
-                updateSummary();
-            }
-            
-            // 视觉反馈
-            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            item.style.animation = 'pulse 0.5s ease-in-out';
-            setTimeout(() => {
-                item.style.animation = '';
-            }, 500);
-        }
-
-        // 获取表格标题
-        function getTableTitle(tableId) {
-            const titles = {
-                table1: '表一：建设单位项目负责人（12项）',
-                table2: '表二：施工单位项目经理（17项）',
-                table3: '表三：专职安全员（15项）',
-                table4: '表四：总监理工程师（14项）',
-                table5: '表五：安全专业监理工程师（14项）'
-            };
-            return titles[tableId] || '';
-        }
-
-        // 渲染检查项 - 添加下一项按钮
-        function renderInspectionItems(tableId) {
-            const container = document.getElementById(`${tableId}-container`);
-            const data = inspectionData[tableId];
-            if (!data || !container) return;
-
-            const tableIndex = tableOrder.indexOf(tableId);
-            const hasPrev = tableIndex > 0;
-            const hasNext = tableIndex < tableOrder.length - 1;
-
-            container.innerHTML = `
-                <div class="table-header">
-                    <h2>${getTableTitle(tableId)}</h2>
-                    <div class="progress-bar">
-                        <div class="progress-track">
-                            <div class="progress-fill" id="${tableId}-progress" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-text" id="${tableId}-progress-text">0/${data.length}</div>
-                    </div>
-                </div>
-                <div class="filter-bar">
-                    <button class="filter-btn active" onclick="filterItems('${tableId}', 'all', this)">全部</button>
-                    <button class="filter-btn" onclick="filterItems('${tableId}', 'pending', this)">待检查</button>
-                    <button class="filter-btn" onclick="filterItems('${tableId}', 'compliant', this)">符合</button>
-                    <button class="filter-btn" onclick="filterItems('${tableId}', 'noncompliant', this)">不符合</button>
-                    <button class="filter-btn" onclick="filterItems('${tableId}', 'notapplicable', this)">无此项</button>
-                </div>
-                ${data.map((item, index) => `
-                    <div class="inspection-item" data-table="${tableId}" data-item="${item.id}" data-status="pending" id="item-${tableId}-${index}">
-                        <div class="item-header">
-                            <span class="item-id">${item.id}</span>
-                            <span class="item-title" contenteditable="false" id="title-${tableId}-${item.id}">${item.title}</span>
-                            <button class="edit-btn" onclick="toggleEdit('${tableId}', '${item.id}')">✏️ 编辑</button>
-                        </div>
-                        <div class="item-details">
-                            <div class="detail-section">
-                                <h4>📋 检查方式</h4>
-                                <ul id="methods-${tableId}-${item.id}">${item.methods.map(m => `<li>${m}</li>`).join('')}</ul>
-                            </div>
-                            <div class="detail-section">
-                                <h4>💡 专家技巧</h4>
-                                <ul id="tips-${tableId}-${item.id}">${item.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-                            </div>
-                            <div class="detail-section">
-                                <h4>⚠️ 常见问题</h4>
-                                <div class="common-issues-container" id="issues-${tableId}-${item.id}"></div>
-                            </div>
-                            <div class="detail-section">
-                                <h4>📖 法规依据</h4>
-                                <p id="regulations-${tableId}-${item.id}">${item.regulations}</p>
-                            </div>
-                        </div>
-                        <div class="item-result">
-                            <label><input type="radio" name="result-${tableId}-${item.id}" value="compliant" onchange="updateItemStatus('${tableId}', '${item.id}', 'compliant'); updateSummary()"> ✅ 符合</label>
-                            <label><input type="radio" name="result-${tableId}-${item.id}" value="noncompliant" onchange="updateItemStatus('${tableId}', '${item.id}', 'noncompliant'); updateSummary()"> ❌ 不符合</label>
-                            <label><input type="radio" name="result-${tableId}-${item.id}" value="notapplicable" onchange="updateItemStatus('${tableId}', '${item.id}', 'notapplicable'); updateSummary()"> ⚪ 无此项</label>
-                        </div>
-                        <div class="item-remark">
-                            <textarea class="remark-input" placeholder="备注说明（点击常见问题自动填入并标记为不符合）..." data-table="${tableId}" data-item="${item.id}" oninput="updateSummary()"></textarea>
-                        </div>
-                        <button class="next-item-btn" onclick="goToNextItem('${tableId}', ${index})">⬇️ 下一检查项</button>
-                    </div>
-                `).join('')}
-                <div class="action-bar">
-                    <button class="action-btn primary" onclick="selectAll('${tableId}', 'compliant')">✅ 全选符合</button>
-                    <button class="action-btn warning" onclick="clearTable('${tableId}')">🔄 清空</button>
-                </div>
-                <div class="nav-buttons">
-                    <button class="nav-btn prev" onclick="navigateTable(-1)" ${!hasPrev ? 'disabled' : ''}>⬅️ 上一张表</button>
-                    <button class="nav-btn next" onclick="navigateTable(1)" ${!hasNext ? 'disabled' : ''}>➡️ 下一张表</button>
-                </div>
-            `;
-
-            // 初始化常见问题
-            data.forEach(item => {
-                issueManager.renderIssueInput(tableId, item.id);
-            });
-
-            updateTableProgress(tableId);
-        }
-
-        // 新增：跳转到下一检查项
-        function goToNextItem(tableId, currentIndex) {
-            const data = inspectionData[tableId];
-            if (currentIndex < data.length - 1) {
-                const nextIndex = currentIndex + 1;
-                const nextItem = document.getElementById(`item-${tableId}-${nextIndex}`);
-                if (nextItem) {
-                    nextItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    nextItem.style.animation = 'pulse 0.5s ease-in-out';
-                    setTimeout(() => {
-                        nextItem.style.animation = '';
-                    }, 500);
-                }
-            } else {
-                // 如果是最后一项，询问是否进入下一张表
-                const tableIndex = tableOrder.indexOf(tableId);
-                if (tableIndex < tableOrder.length - 1) {
-                    if (confirm('当前表格已检查完毕，是否进入下一张表？')) {
-                        navigateTable(1);
-                    }
-                } else {
-                    alert('所有检查项已完成！');
-                }
-            }
-        }
-
-        // 切换编辑模式
-        function toggleEdit(tableId, itemId) {
-            const btn = event.target;
-            const titleEl = document.getElementById(`title-${tableId}-${itemId}`);
-            const methodsEl = document.getElementById(`methods-${tableId}-${itemId}`);
-            const tipsEl = document.getElementById(`tips-${tableId}-${itemId}`);
-            const regulationsEl = document.getElementById(`regulations-${tableId}-${itemId}`);
-            
-            const isEditing = btn.classList.contains('active');
-            
-            if (isEditing) {
-                const item = inspectionData[tableId].find(i => i.id === itemId);
-                if (item) {
-                    item.title = titleEl.textContent.trim();
-                    item.methods = Array.from(methodsEl.querySelectorAll('li')).map(li => li.textContent.trim());
-                    item.tips = Array.from(tipsEl.querySelectorAll('li')).map(li => li.textContent.trim());
-                    item.regulations = regulationsEl.textContent.trim();
-                    localStorage.setItem('inspectionData', JSON.stringify(inspectionData));
-                }
-                
-                titleEl.contentEditable = 'false';
-                methodsEl.contentEditable = 'false';
-                tipsEl.contentEditable = 'false';
-                regulationsEl.contentEditable = 'false';
-                btn.classList.remove('active');
-                btn.textContent = '✏️ 编辑';
-            } else {
-                titleEl.contentEditable = 'true';
-                methodsEl.contentEditable = 'true';
-                tipsEl.contentEditable = 'true';
-                regulationsEl.contentEditable = 'true';
-                btn.classList.add('active');
-                btn.textContent = '💾 保存';
-            }
-        }
-
-        // 更新项目状态
-        function updateItemStatus(tableId, itemId, status) {
-            const item = document.querySelector(`[data-table="${tableId}"][data-item="${itemId}"]`);
-            if (item) {
-                item.dataset.status = status;
-            }
-            updateTableProgress(tableId);
-            updateTabCount(tableId);
-        }
-
-        // 更新表格进度
-        function updateTableProgress(tableId) {
-            const container = document.getElementById(`${tableId}-container`);
-            if (!container) return;
-            const items = container.querySelectorAll('.inspection-item');
-            const completed = Array.from(items).filter(i => i.dataset.status !== 'pending').length;
-            const progress = (completed / items.length) * 100;
-            
-            document.getElementById(`${tableId}-progress`).style.width = `${progress}%`;
-            document.getElementById(`${tableId}-progress-text`).textContent = `${completed}/${items.length}`;
-        }
-
-        // 更新标签计数
-        function updateTabCount(tableId) {
-            const container = document.getElementById(`${tableId}-container`);
-            if (!container) return;
-            const items = container.querySelectorAll('.inspection-item');
-            const completed = Array.from(items).filter(i => i.dataset.status !== 'pending').length;
-            const total = items.length;
-            const tabId = tableId.replace('table', 'tab');
-            const countEl = document.getElementById(`${tabId}-count`);
-            if (countEl) {
-                countEl.textContent = `${completed}/${total}`;
-            }
-        }
-
-        // 筛选项目
-        function filterItems(tableId, filter, btn) {
-            const container = document.getElementById(`${tableId}-container`);
-            if (!container) return;
-            
-            container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            
-            container.querySelectorAll('.inspection-item').forEach(item => {
-                const status = item.dataset.status;
-                if (filter === 'all' || status === filter) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+function exportJSON() {
+    const results = [];
+    document.querySelectorAll('.inspection-item').forEach(item => {
+        const result = item.querySelector('input[name^="result"]:checked');
+        if (result) {
+            results.push({
+                table: item.dataset.table,
+                itemId: item.dataset.item,
+                result: result.value,
+                remark: item.querySelector('.remark-input')?.value || ''
             });
         }
+    });
+    const exportData = {
+        checkInfo: {
+            unit: document.getElementById('checkUnit').value,
+            checker: document.getElementById('checkerName').value,
+            date: document.getElementById('checkDate').value,
+            project: document.getElementById('projectName').value,
+            checkedUnit: document.getElementById('checkedUnit').value,
+            type: document.getElementById('checkType').value
+        },
+        results: results
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `检查报告_${new Date().toLocaleDateString()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
 
-        // 全选符合
-        function selectAll(tableId, status) {
-            const container = document.getElementById(`${tableId}-container`);
-            if (!container) return;
-            
-            container.querySelectorAll('.inspection-item').forEach(item => {
-                const radio = item.querySelector(`input[value="${status}"]`);
-                if (radio) {
-                    radio.checked = true;
-                    updateItemStatus(tableId, item.dataset.item, status);
+function importJSON() {
+    document.getElementById('importFileInput').click();
+}
+
+function handleImportFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (confirm('导入将覆盖当前的检查结果、备注及检查单位信息。是否继续？')) {
+                if (imported.checkInfo) {
+                    if (imported.checkInfo.unit) document.getElementById('checkUnit').value = imported.checkInfo.unit;
+                    if (imported.checkInfo.checker) document.getElementById('checkerName').value = imported.checkInfo.checker;
+                    if (imported.checkInfo.date) document.getElementById('checkDate').value = imported.checkInfo.date;
+                    if (imported.checkInfo.project) document.getElementById('projectName').value = imported.checkInfo.project;
+                    if (imported.checkInfo.checkedUnit) document.getElementById('checkedUnit').value = imported.checkInfo.checkedUnit;
+                    if (imported.checkInfo.type) document.getElementById('checkType').value = imported.checkInfo.type;
                 }
-            });
-            updateSummary();
-        }
-
-        // 清空表格
-        function clearTable(tableId) {
-            if (!confirm('确定要清空该表格的所有选择吗？')) return;
-            
-            const container = document.getElementById(`${tableId}-container`);
-            if (!container) return;
-            
-            container.querySelectorAll('.inspection-item').forEach(item => {
-                item.dataset.status = 'pending';
-                item.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
-                item.querySelector('.remark-input').value = '';
-            });
-            
-            updateTableProgress(tableId);
-            updateTabCount(tableId);
-            updateSummary();
-        }
-
-        // 表格导航
-        function navigateTable(direction) {
-            const newIndex = currentTableIndex + direction;
-            if (newIndex >= 0 && newIndex < tableOrder.length) {
-                const currentTable = tableOrder[currentTableIndex];
-                const container = document.getElementById(`${currentTable}-container`);
-                const items = container.querySelectorAll('.inspection-item');
-                const completed = Array.from(items).filter(i => i.dataset.status !== 'pending').length;
-                const total = items.length;
-                
-                if (direction > 0 && completed < total) {
-                    if (!confirm(`当前表格还有 ${total - completed} 项未完成，确定要进入下一张表吗？`)) {
-                        return;
-                    }
-                }
-                
-                currentTableIndex = newIndex;
-                const newTable = tableOrder[currentTableIndex];
-                
-                document.querySelectorAll('.nav-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                    if (tab.dataset.table === newTable) {
-                        tab.classList.add('active');
-                    }
-                });
-                
-                document.querySelectorAll('.table-container, .summary-panel').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`${newTable}-container`).classList.remove('hidden');
-                
-                scrollToTop();
-            }
-        }
-
-        // 快速滚动到顶部
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // 快速滚动到底部
-        function scrollToBottom() {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-
-        // 按责任人员分组显示不符合项
-        function updateSummary() {
-            let totalItems = 0;
-            let completedItems = 0;
-            let compliantItems = 0;
-            let nonCompliantItems = 0;
-            let notApplicableItems = 0;
-            
-            const nonCompliantByResponsibility = {
-                table1: [],
-                table2: [],
-                table3: [],
-                table4: [],
-                table5: []
-            };
-
-            document.querySelectorAll('.inspection-item').forEach(item => {
-                totalItems++;
-                
-                const result = item.querySelector('input[name^="result"]:checked');
-                if (result) {
-                    completedItems++;
-                    
-                    if (result.value === 'compliant') {
-                        compliantItems++;
-                    } else if (result.value === 'noncompliant') {
-                        nonCompliantItems++;
-                        const itemTitle = item.querySelector('.item-title')?.textContent || '';
-                        const itemId = item.dataset.item || '';
-                        const remark = item.querySelector('.remark-input')?.value || '';
-                        const tableId = item.dataset.table;
-                        
-                        nonCompliantByResponsibility[tableId].push({
-                            id: itemId,
-                            title: itemTitle,
-                            remark: remark,
-                            table: tableId
-                        });
-                    } else if (result.value === 'notapplicable') {
-                        notApplicableItems++;
-                    }
-                }
-            });
-
-            document.getElementById('total-items').textContent = totalItems;
-            document.getElementById('completed-items').textContent = completedItems;
-            document.getElementById('compliant-items').textContent = compliantItems;
-            document.getElementById('noncompliant-items').textContent = nonCompliantItems;
-            document.getElementById('notapplicable-items').textContent = notApplicableItems;
-            document.getElementById('completion-rate').textContent = 
-                totalItems > 0 ? Math.round((completedItems / totalItems) * 100) + '%' : '0%';
-
-            const responsibilityGroupsContainer = document.getElementById('responsibility-groups');
-            let hasAnyIssues = false;
-            
-            responsibilityGroupsContainer.innerHTML = '<h3 style="margin-bottom: 20px; color: #c53030;">📋 各责任人员不符合项清单</h3>';
-            
-            tableOrder.forEach(tableId => {
-                const issues = nonCompliantByResponsibility[tableId];
-                if (issues.length > 0) {
-                    hasAnyIssues = true;
-                    const groupName = responsibilityNames[tableId];
-                    
-                    responsibilityGroupsContainer.innerHTML += `
-                        <div class="responsibility-group">
-                            <h4>
-                                🏢 ${groupName} 
-                                <span class="issue-count">${issues.length}项</span>
-                            </h4>
-                            ${issues.map(item => `
-                                <div class="noncompliant-item">
-                                    <strong>${item.id}</strong>
-                                    <div class="item-detail">${item.title}</div>
-                                    ${item.remark ? `<div class="item-remark">📝 备注：${item.remark}</div>` : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }
-            });
-            
-            if (!hasAnyIssues) {
-                responsibilityGroupsContainer.innerHTML += '<p class="no-issues">✅ 所有责任人员均无不符合项</p>';
-            }
-        }
-
-        // 标签页切换
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                const tableId = this.dataset.table;
-                document.querySelectorAll('.table-container, .summary-panel').forEach(el => el.classList.add('hidden'));
-                
-                if (tableId === 'summary') {
-                    document.getElementById('summary-container').classList.remove('hidden');
-                    updateSummary();
-                } else {
-                    currentTableIndex = tableOrder.indexOf(tableId);
-                    document.getElementById(`${tableId}-container`).classList.remove('hidden');
-                }
-                
-                scrollToTop();
-            });
-        });
-
-        // 添加项目模态框
-        function showAddItemModal() {
-            document.getElementById('addItemModal').classList.remove('hidden');
-        }
-
-        function closeAddItemModal() {
-            document.getElementById('addItemModal').classList.add('hidden');
-        }
-
-        function confirmAddItem() {
-            const tableId = document.getElementById('newItemTable').value;
-            const itemId = document.getElementById('newItemId').value;
-            const title = document.getElementById('newItemTitle').value;
-            const methods = document.getElementById('newItemMethods').value.split('\n').filter(l => l.trim());
-            const tips = document.getElementById('newItemTips').value.split('\n').filter(l => l.trim());
-            const issues = document.getElementById('newItemIssues').value.split(',').map(i => i.trim()).filter(i => i);
-            const regulations = document.getElementById('newItemRegulations').value;
-
-            if (!itemId || !title) {
-                alert('请填写检查项编号和标题');
-                return;
-            }
-
-            const newItem = { id: itemId, title, methods, tips, commonIssues: issues, regulations };
-            inspectionData[tableId].push(newItem);
-            
-            localStorage.setItem('inspectionData', JSON.stringify(inspectionData));
-            
-            renderInspectionItems(tableId);
-            closeAddItemModal();
-            alert('检查项添加成功！');
-        }
-
-        // 批量编辑模态框
-        function showEditAllModal() {
-            document.getElementById('editAllModal').classList.remove('hidden');
-            loadEditItems();
-        }
-
-        function closeEditAllModal() {
-            document.getElementById('editAllModal').classList.add('hidden');
-        }
-
-        function loadEditItems() {
-            const tableId = document.getElementById('editTableSelect').value;
-            const select = document.getElementById('editItemSelect');
-            const data = inspectionData[tableId];
-            
-            select.innerHTML = data.map(item => `<option value="${item.id}">${item.id} - ${item.title.substring(0, 50)}...</option>`).join('');
-            loadEditItemData();
-        }
-
-        function loadEditItemData() {
-            const tableId = document.getElementById('editTableSelect').value;
-            const itemId = document.getElementById('editItemSelect').value;
-            const item = inspectionData[tableId].find(i => i.id === itemId);
-            
-            if (item) {
-                document.getElementById('editItemTitle').value = item.title;
-                document.getElementById('editItemMethods').value = item.methods.join('\n');
-                document.getElementById('editItemTips').value = item.tips.join('\n');
-                document.getElementById('editItemIssues').value = item.commonIssues.join(', ');
-                document.getElementById('editItemRegulations').value = item.regulations;
-            }
-        }
-
-        function confirmEditItem() {
-            const tableId = document.getElementById('editTableSelect').value;
-            const itemId = document.getElementById('editItemSelect').value;
-            const item = inspectionData[tableId].find(i => i.id === itemId);
-            
-            if (item) {
-                item.title = document.getElementById('editItemTitle').value;
-                item.methods = document.getElementById('editItemMethods').value.split('\n').filter(l => l.trim());
-                item.tips = document.getElementById('editItemTips').value.split('\n').filter(l => l.trim());
-                item.commonIssues = document.getElementById('editItemIssues').value.split(',').map(i => i.trim()).filter(i => i);
-                item.regulations = document.getElementById('editItemRegulations').value;
-                
-                localStorage.setItem('inspectionData', JSON.stringify(inspectionData));
-                
-                renderInspectionItems(tableId);
-                closeEditAllModal();
-                alert('修改已保存！');
-            }
-        }
-
-        // 导出整改通知书
-        function exportNotice() {
-            const nonCompliantByResponsibility = {
-                table1: [],
-                table2: [],
-                table3: [],
-                table4: [],
-                table5: []
-            };
-
-            document.querySelectorAll('.inspection-item').forEach(item => {
-                const result = item.querySelector('input[name^="result"]:checked');
-                if (result && result.value === 'noncompliant') {
-                    const itemTitle = item.querySelector('.item-title')?.textContent || '';
-                    const itemId = item.dataset.item || '';
-                    const remark = item.querySelector('.remark-input')?.value || '';
-                    const tableId = item.dataset.table;
-                    
-                    nonCompliantByResponsibility[tableId].push({
-                        id: itemId,
-                        title: itemTitle,
-                        remark: remark
+                if (imported.results && Array.isArray(imported.results)) {
+                    document.querySelectorAll('.inspection-item').forEach(item => {
+                        item.dataset.status = 'pending';
+                        item.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+                        const remarkTextarea = item.querySelector('.remark-input');
+                        if (remarkTextarea) remarkTextarea.value = '';
                     });
-                }
-            });
-
-            const totalIssues = Object.values(nonCompliantByResponsibility).reduce((sum, arr) => sum + arr.length, 0);
-            if (totalIssues === 0) {
-                alert('当前没有不符合项，无法生成整改通知书！');
-                return;
-            }
-
-            const checkUnit = document.getElementById('checkUnit').value || '____________';
-            const checkerName = document.getElementById('checkerName').value || '____________';
-            const checkDate = document.getElementById('checkDate').value || '____________';
-            const projectName = document.getElementById('projectName').value || '____________';
-            const checkedUnit = document.getElementById('checkedUnit').value || '____________';
-
-            let noticeContent = `
-                <div class="notice-preview">
-                    <div class="notice-title">建设工程安全整改通知书</div>
-                    <div class="notice-info">
-                        <p><strong>编号：</strong>______〔20__〕____号</p>
-                        <p><strong>工程名称：</strong>${projectName}</p>
-                        <p><strong>受检单位：</strong>${checkedUnit}</p>
-                        <p><strong>检查单位：</strong>${checkUnit}</p>
-                        <p><strong>检查人员：</strong>${checkerName}</p>
-                        <p><strong>检查日期：</strong>${checkDate}</p>
-                    </div>
-                    <div style="margin: 20px 0;">
-                        <p>经检查，发现你单位存在以下安全隐患和问题，现责令限期整改：</p>
-                    </div>
-                    <table class="notice-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 60px;">序号</th>
-                                <th style="width: 120px;">责任人员</th>
-                                <th style="width: 60px;">编号</th>
-                                <th>存在问题</th>
-                                <th style="width: 100px;">整改要求</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            let serialNumber = 1;
-            tableOrder.forEach(tableId => {
-                const issues = nonCompliantByResponsibility[tableId];
-                issues.forEach(issue => {
-                    noticeContent += `
-                        <tr>
-                            <td>${serialNumber++}</td>
-                            <td>${responsibilityNames[tableId]}</td>
-                            <td>${issue.id}</td>
-                            <td>${issue.title}${issue.remark ? `<br><em style="color: #c53030;">备注：${issue.remark}</em>` : ''}</td>
-                            <td>限期整改</td>
-                        </tr>
-                    `;
-                });
-            });
-
-            noticeContent += `
-                        </tbody>
-                    </table>
-                    <div style="margin: 30px 0;">
-                        <p><strong>整改期限：</strong>____年____月____日前</p>
-                        <p><strong>整改要求：</strong></p>
-                        <p>1. 对上述问题立即组织整改，消除安全隐患；</p>
-                        <p>2. 整改完成后书面回复我单位；</p>
-                        <p>3. 逾期未整改或整改不到位的，将依法依规处理。</p>
-                    </div>
-                    <div class="notice-footer">
-                        <div>
-                            <p>检查单位（盖章）：</p>
-                            <p style="margin-top: 30px;">${checkUnit}</p>
-                        </div>
-                        <div class="notice-signature">
-                            <p>签发日期：____年____月____日</p>
-                            <p style="margin-top: 30px;">${checkDate}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('noticePreview').innerHTML = noticeContent;
-            document.getElementById('noticeModal').classList.remove('hidden');
-        }
-
-        function closeNoticeModal() {
-            document.getElementById('noticeModal').classList.add('hidden');
-        }
-
-        function printNotice() {
-            const noticeContent = document.getElementById('noticePreview').innerHTML;
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>整改通知书</title>
-                    <style>
-                        body { font-family: 'SimSun', serif; padding: 40px; }
-                        .notice-preview { border: none; }
-                        .notice-title { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 30px; color: #c53030; }
-                        .notice-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                        .notice-table th, .notice-table td { border: 1px solid #333; padding: 10px; text-align: left; }
-                        .notice-table th { background: #f5f5f5; font-weight: bold; }
-                        .notice-footer { display: flex; justify-content: space-between; margin-top: 40px; }
-                        @media print { body { padding: 20px; } }
-                    </style>
-                </head>
-                <body>
-                    ${noticeContent}
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        }
-
-        function downloadNotice() {
-            const noticeContent = document.getElementById('noticePreview').innerHTML;
-            const checkDate = document.getElementById('checkDate').value || new Date().toLocaleDateString();
-            
-            const html = `
-                <!DOCTYPE html>
-                <html lang="zh-CN">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>建设工程安全整改通知书</title>
-                    <style>
-                        body { font-family: 'SimSun', 'Microsoft YaHei', serif; padding: 40px; line-height: 2; }
-                        .notice-preview { border: 2px solid #333; padding: 40px; }
-                        .notice-title { font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 30px; color: #c53030; }
-                        .notice-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                        .notice-table th, .notice-table td { border: 1px solid #333; padding: 12px; text-align: left; }
-                        .notice-table th { background: #f5f5f5; font-weight: bold; }
-                        .notice-footer { display: flex; justify-content: space-between; margin-top: 40px; }
-                        .notice-signature { text-align: right; }
-                    </style>
-                </head>
-                <body>
-                    ${noticeContent}
-                </body>
-                </html>
-            `;
-            
-            const blob = new Blob([html], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `整改通知书_${checkDate}.html`;
-            a.click();
-        }
-
-        // 导出功能
-        function exportJSON() {
-            const data = {
-                checkInfo: {
-                    unit: document.getElementById('checkUnit').value,
-                    checker: document.getElementById('checkerName').value,
-                    date: document.getElementById('checkDate').value,
-                    project: document.getElementById('projectName').value,
-                    checkedUnit: document.getElementById('checkedUnit').value,
-                    type: document.getElementById('checkType').value
-                },
-                results: []
-            };
-
-            document.querySelectorAll('.inspection-item').forEach(item => {
-                const result = item.querySelector('input[name^="result"]:checked');
-                if (result) {
-                    data.results.push({
-                        table: item.dataset.table,
-                        itemId: item.dataset.item,
-                        title: item.querySelector('.item-title').textContent,
-                        result: result.value,
-                        remark: item.querySelector('.remark-input').value
-                    });
-                }
-            });
-
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `检查报告_${new Date().toLocaleDateString()}.json`;
-            a.click();
-        }
-
-        function printReport() {
-            window.print();
-        }
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedData = localStorage.getItem('inspectionData');
-            if (savedData) {
-                try {
-                    const parsed = JSON.parse(savedData);
-                    Object.keys(parsed).forEach(key => {
-                        if (inspectionData[key]) {
-                            inspectionData[key] = parsed[key];
+                    imported.results.forEach(res => {
+                        const targetRadio = document.querySelector(`[data-table="${res.table}"][data-item="${res.itemId}"] input[value="${res.result}"]`);
+                        if (targetRadio) {
+                            targetRadio.checked = true;
+                            const itemDiv = targetRadio.closest('.inspection-item');
+                            if (itemDiv) itemDiv.dataset.status = res.result;
                         }
+                        const targetRemark = document.querySelector(`[data-table="${res.table}"][data-item="${res.itemId}"] .remark-input`);
+                        if (targetRemark && res.remark) targetRemark.value = res.remark;
                     });
-                } catch (e) {
-                    console.error('加载保存数据失败', e);
+                    tableOrder.forEach(tid => updateTableProgress(tid));
+                    updateSummary();
+                    saveToLocal();
+                    alert('导入成功！');
+                } else {
+                    alert('导入文件格式不正确，缺少 results 字段。');
                 }
             }
-            
-            document.getElementById('checkDate').valueAsDate = new Date();
-            
-            tableOrder.forEach(renderInspectionItems);
-            
-            document.getElementById('table1-container').classList.remove('hidden');
+        } catch(err) {
+            alert('导入失败，文件格式错误：' + err.message);
+        }
+        input.value = '';
+    };
+    reader.readAsText(file, 'UTF-8');
+}
+
+function printReport() { window.print(); }
+
+function exportNotice() {
+    const nc = { table1:[], table2:[], table3:[], table4:[], table5:[] };
+    document.querySelectorAll('.inspection-item').forEach(item => {
+        const result = item.querySelector('input[name^="result"]:checked');
+        if (result && result.value === 'noncompliant') {
+            const title = item.querySelector('.item-title').textContent;
+            const id = item.dataset.item;
+            const remark = item.querySelector('.remark-input').value;
+            const tid = item.dataset.table;
+            nc[tid].push({ id, title, remark });
+        }
+    });
+    const totalIssues = Object.values(nc).reduce((s, a) => s + a.length, 0);
+    if (totalIssues === 0) { alert('当前没有不符合项，无法生成整改通知书！'); return; }
+    const unit = document.getElementById('checkUnit').value || '____________';
+    const checker = document.getElementById('checkerName').value || '____________';
+    const date = document.getElementById('checkDate').value || '____________';
+    const project = document.getElementById('projectName').value || '____________';
+    const checked = document.getElementById('checkedUnit').value || '____________';
+    const respNames = { table1:'建设单位项目负责人', table2:'施工单位项目经理', table3:'专职安全员', table4:'总监理工程师', table5:'安全专业监理工程师' };
+    let html = `<div style="border:2px solid #333;padding:30px;font-family:SimSun;"><div style="text-align:center;font-size:20px;font-weight:bold;margin-bottom:30px;color:#c53030;">建设工程安全整改通知书</div>
+        <div><p>编号：______〔20__〕____号</p><p>工程名称：${project}</p><p>受检单位：${checked}</p><p>检查单位：${unit}</p><p>检查人员：${checker}</p><p>检查日期：${date}</p></div>
+        <p style="margin:20px 0;">经检查，发现你单位存在以下安全隐患和问题，现责令限期整改：</p>
+        <table border="1" style="border-collapse:collapse;width:100%;"><thead><tr><th>序号</th><th>责任人员</th><th>编号</th><th>存在问题</th><th>整改要求</th></tr></thead><tbody>`;
+    let sn = 1;
+    tableOrder.forEach(tid => {
+        nc[tid].forEach(issue => {
+            html += `<tr><td>${sn++}</td><td>${respNames[tid]}</td><td>${issue.id}</td><td>${issue.title}${issue.remark ? `<br><em>备注：${issue.remark}</em>` : ''}</td><td>限期整改</td></tr>`;
         });
-    </script>
+    });
+    html += `</tbody></table><div style="margin:30px 0;"><p><strong>整改期限：</strong>____年____月____日前</p><p><strong>整改要求：</strong></p><p>1. 对上述问题立即组织整改，消除安全隐患；</p><p>2. 整改完成后书面回复我单位；</p><p>3. 逾期未整改或整改不到位的，将依法依规处理。</p></div>
+        <div style="display:flex;justify-content:space-between;margin-top:40px;"><div><p>检查单位（盖章）：</p><p style="margin-top:30px;">${unit}</p></div><div style="text-align:right;"><p>签发日期：____年____月____日</p><p style="margin-top:30px;">${date}</p></div></div></div>`;
+    document.getElementById('noticePreview').innerHTML = html;
+    document.getElementById('noticeModal').classList.remove('hidden');
+}
+
+function closeNoticeModal() { document.getElementById('noticeModal').classList.add('hidden'); }
+function printNotice() {
+    const content = document.getElementById('noticePreview').innerHTML;
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>整改通知书</title><style>body{font-family:SimSun;padding:40px}</style></head><body>${content}</body></html>`);
+    w.document.close();
+    w.print();
+}
+function downloadNotice() {
+    const content = document.getElementById('noticePreview').innerHTML;
+    const blob = new Blob([`<html><head><meta charset="UTF-8"><title>整改通知书</title><style>body{font-family:SimSun;padding:40px}</style></head><body>${content}</body></html>`], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `整改通知书_${document.getElementById('checkDate').value || '未注明日期'}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function showAddItemModal() { document.getElementById('addItemModal').classList.remove('hidden'); }
+function closeAddItemModal() { document.getElementById('addItemModal').classList.add('hidden'); }
+function confirmAddItem() {
+    const tid = document.getElementById('newItemTable').value;
+    const id = document.getElementById('newItemId').value.trim();
+    const title = document.getElementById('newItemTitle').value.trim();
+    const content = document.getElementById('newItemContent').value.trim();
+    const methods = document.getElementById('newItemMethods').value.split('\n').filter(l => l.trim());
+    const tips = document.getElementById('newItemTips').value.split('\n').filter(l => l.trim());
+    const issues = document.getElementById('newItemIssues').value.split(',').map(s => s.trim()).filter(s => s);
+    const regulations = document.getElementById('newItemRegulations').value.trim();
+    if (!id || !title) { alert('请填写编号和标题'); return; }
+    inspectionData[tid].push({ id, title, content, methods, tips, commonIssues: issues, regulations });
+    saveToLocal();
+    renderInspectionItems(tid);
+    closeAddItemModal();
+    alert('添加成功');
+}
+
+function showEditAllModal() { document.getElementById('editAllModal').classList.remove('hidden'); loadEditItems(); }
+function closeEditAllModal() { document.getElementById('editAllModal').classList.add('hidden'); }
+function loadEditItems() {
+    const tid = document.getElementById('editTableSelect').value;
+    const select = document.getElementById('editItemSelect');
+    select.innerHTML = inspectionData[tid].map(item => `<option value="${item.id}">${item.id} - ${item.title.substring(0, 50)}</option>`).join('');
+    loadEditItemData();
+}
+function loadEditItemData() {
+    const tid = document.getElementById('editTableSelect').value;
+    const id = document.getElementById('editItemSelect').value;
+    const item = inspectionData[tid].find(i => i.id === id);
+    if (item) {
+        document.getElementById('editItemTitle').value = item.title;
+        document.getElementById('editItemContent').value = item.content;
+        document.getElementById('editItemMethods').value = item.methods.join('\n');
+        document.getElementById('editItemTips').value = item.tips.join('\n');
+        document.getElementById('editItemIssues').value = item.commonIssues.join(', ');
+        document.getElementById('editItemRegulations').value = item.regulations;
+    }
+}
+function confirmEditItem() {
+    const tid = document.getElementById('editTableSelect').value;
+    const id = document.getElementById('editItemSelect').value;
+    const item = inspectionData[tid].find(i => i.id === id);
+    if (item) {
+        item.title = document.getElementById('editItemTitle').value;
+        item.content = document.getElementById('editItemContent').value;
+        item.methods = document.getElementById('editItemMethods').value.split('\n').filter(l => l.trim());
+        item.tips = document.getElementById('editItemTips').value.split('\n').filter(l => l.trim());
+        item.commonIssues = document.getElementById('editItemIssues').value.split(',').map(s => s.trim()).filter(s => s);
+        item.regulations = document.getElementById('editItemRegulations').value;
+        saveToLocal();
+        renderInspectionItems(tid);
+        closeEditAllModal();
+        alert('修改已保存');
+    }
+}
+
+// 恢复保存的检查结果
+function restoreSavedResults() {
+    if (window._savedResults && Array.isArray(window._savedResults)) {
+        window._savedResults.forEach(res => {
+            const targetRadio = document.querySelector(`[data-table="${res.table}"][data-item="${res.itemId}"] input[value="${res.result}"]`);
+            if (targetRadio) {
+                targetRadio.checked = true;
+                const itemDiv = targetRadio.closest('.inspection-item');
+                if (itemDiv) itemDiv.dataset.status = res.result;
+            }
+            const targetRemark = document.querySelector(`[data-table="${res.table}"][data-item="${res.itemId}"] .remark-input`);
+            if (targetRemark && res.remark) targetRemark.value = res.remark;
+        });
+        tableOrder.forEach(tid => updateTableProgress(tid));
+        updateSummary();
+        delete window._savedResults;
+    }
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+    // 尝试从 localStorage 加载完整数据
+    const savedData = localStorage.getItem('inspectionData');
+    if (savedData) {
+        try {
+            const parsed = JSON.parse(savedData);
+            // 合并数据，确保所有字段完整
+            for (let tid of tableOrder) {
+                if (parsed[tid] && Array.isArray(parsed[tid])) {
+                    for (let i = 0; i < parsed[tid].length; i++) {
+                        const oldItem = parsed[tid][i];
+                        const defaultItem = defaultData[tid].find(d => d.id === oldItem.id);
+                        if (defaultItem) {
+                            if (!oldItem.content) oldItem.content = defaultItem.content;
+                            if (!oldItem.methods || !oldItem.methods.length) oldItem.methods = defaultItem.methods;
+                            if (!oldItem.tips || !oldItem.tips.length) oldItem.tips = defaultItem.tips;
+                            if (!oldItem.commonIssues || !oldItem.commonIssues.length) oldItem.commonIssues = defaultItem.commonIssues;
+                            if (!oldItem.regulations) oldItem.regulations = defaultItem.regulations;
+                        }
+                    }
+                    inspectionData[tid] = parsed[tid];
+                } else {
+                    inspectionData[tid] = defaultData[tid];
+                }
+            }
+        } catch(e) { console.warn(e); }
+    } else {
+        inspectionData = JSON.parse(JSON.stringify(defaultData));
+    }
+    document.getElementById('checkDate').valueAsDate = new Date();
+    tableOrder.forEach(renderInspectionItems);
+    loadSavedData();
+    restoreSavedResults();
+    document.getElementById('table1-container').classList.remove('hidden');
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tid = this.dataset.table;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.table-container, .summary-panel').forEach(el => el.classList.add('hidden'));
+            if (tid === 'summary') {
+                document.getElementById('summary-container').classList.remove('hidden');
+                updateSummary();
+            } else {
+                currentTableIndex = tableOrder.indexOf(tid);
+                document.getElementById(`${tid}-container`).classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+});
+</script>
 </body>
 </html>
+</script>
